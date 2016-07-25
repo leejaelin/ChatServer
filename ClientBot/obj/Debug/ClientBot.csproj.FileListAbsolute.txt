@@ -1,0 +1,10 @@
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\bin\Debug\ClientBot.exe.config
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\bin\Debug\ClientBot.exe
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\bin\Debug\ClientBot.pdb
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.exe
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.pdb
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.Properties.Resources.resources
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.csproj.GenerateResource.Cache
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\bin\Debug\ShareData.dll
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\bin\Debug\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2015\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.csprojResolveAssemblyReference.cache

@@ -1,0 +1,4 @@
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\bin\Release\ShareData.dll
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\bin\Release\ShareData.pdb
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Release\ShareData.dll
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Release\ShareData.pdb

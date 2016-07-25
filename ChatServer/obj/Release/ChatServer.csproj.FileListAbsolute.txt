@@ -1,0 +1,5 @@
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\bin\Release\ChatServer.exe.config
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\bin\Release\ChatServer.exe
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\bin\Release\ChatServer.pdb
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\obj\Release\ChatServer.exe
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\obj\Release\ChatServer.pdb

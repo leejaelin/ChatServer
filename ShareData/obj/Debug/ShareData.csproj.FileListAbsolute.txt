@@ -1,0 +1,5 @@
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\bin\Debug\ShareData.dll
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\bin\Debug\ShareData.pdb
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Debug\ShareData.dll
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Debug\ShareData.pdb
+c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Debug\ShareData.csprojResolveAssemblyReference.cache
