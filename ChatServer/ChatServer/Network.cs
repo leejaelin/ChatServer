@@ -1,4 +1,6 @@
 ﻿using ChatServer.Data.User;
+using ShareData;
+using ShareData.Message;
 using System;
 using System.IO;
 using System.Linq;
@@ -22,25 +24,23 @@ namespace ChatServer.ChatServer
 
         public void receiveProc(IAsyncResult ar)
         {
-            IAsyncResult iar = ar;
-            User user = (User)iar.AsyncState;
-            int recvBytes = user.GetBuffer().Length;
+            User user = (User)ar.AsyncState;
+            if (user == null)
+                return;
+
+            int recvBytes = user.GetSocket().EndReceive(ar);
             if (recvBytes > 0)
             {
                 MemoryStream stream = new MemoryStream(user.GetBuffer());
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
-                Object obj = null;
-                try
-                {
-                    obj = binaryFormatter.Deserialize(stream);
-                }
-                catch( Exception e )
-                {
-                    string vstring = e.Message;
-                }
-                ShareData.TestPacket req = (ShareData.TestPacket)obj;
+                Object obj = binaryFormatter.Deserialize(stream);
 
-                Console.WriteLine(req.testString);
+                // Message Create
+                Message msg = new Message(MessageType.M_PACKET, obj);
+                
+                // Message Queue insert
+                JobQueue.GetInstance().TryPushBack(msg);
+
                 Array.Clear(user.GetBuffer(), 0, user.GetBuffer().Length);
             }
             user.GetSocket().BeginReceive(user.GetBuffer(), 0, user.GetBuffer().Length, SocketFlags.None, m_receiveHandle, user);
@@ -49,11 +49,11 @@ namespace ChatServer.ChatServer
         public void acceptProc(IAsyncResult ar)
         {
             Socket client = m_listener.EndAccept(ar);
-            var tmp = client.AddressFamily;
             User user = new User(0, UserCnt++, client);
             Data.User.UserContainer.GetInstance().Insert(user);
 
             client.BeginReceive(user.GetBuffer(), 0, user.GetBuffer().Length, SocketFlags.None, m_receiveHandle, user);
+            m_listener.BeginAccept(m_acceptHandle, null);
         }
 
         public void StartServer()
@@ -64,6 +64,7 @@ namespace ChatServer.ChatServer
             // Socket
             const int port = 12345;
             IPAddress ipAddr = Dns.Resolve("localhost").AddressList[0];
+            //IPAddress ipAddr = (IPAddress)Dns.GetHostEntry(Dns.GetHostName()).AddressList.GetValue(1);
             IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
 
             // Listen
@@ -71,7 +72,7 @@ namespace ChatServer.ChatServer
             try
             {
                 m_listener.Bind(ipEndPoint);
-                m_listener.Listen(100);
+                m_listener.Listen(10);
             }
             catch (Exception e)
             {
@@ -92,8 +93,7 @@ namespace ChatServer.ChatServer
         private static void RecvPacket(object sender, SocketAsyncEventArgs e)
         {
             Socket client = (Socket)sender;
-            ShareData.TestPacket packet =
-                (ShareData.TestPacket)e.UserToken;
+            ShareData.TestPacket packet = (ShareData.TestPacket)e.UserToken;
         }
     }
 }

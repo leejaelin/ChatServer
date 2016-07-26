@@ -3,3 +3,8 @@ c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\bi
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Debug\ShareData.dll
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Debug\ShareData.pdb
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Debug\ShareData.csprojResolveAssemblyReference.cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\bin\Debug\ShareData.dll
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\bin\Debug\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\obj\Debug\ShareData.dll
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\obj\Debug\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\obj\Debug\ShareData.csprojResolveAssemblyReference.cache

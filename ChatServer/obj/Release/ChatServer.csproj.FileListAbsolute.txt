@@ -3,3 +3,10 @@ c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\b
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\bin\Release\ChatServer.pdb
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\obj\Release\ChatServer.exe
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ChatServer\obj\Release\ChatServer.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Release\ChatServer.exe.config
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Release\ChatServer.exe
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Release\ChatServer.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Release\ShareData.dll
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Release\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Release\ChatServer.exe
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Release\ChatServer.pdb

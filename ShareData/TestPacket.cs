@@ -3,10 +3,17 @@
 namespace ShareData
 {
     [Serializable()]
-    public class TestPacket
+    public class TestPacket : Packet
     {
-        public int idx { get; set; }
-        public int testIdx { get; set; }
+        public TestPacket() : base(PACKET_INDEX.TESTPACKET) { }
         public string testString { get; set; }
+    }
+
+    [Serializable()]
+    public class TestPacket2 : Packet
+    {
+        public TestPacket2() : base(PACKET_INDEX.TESTPACKET) { }
+        public string testString { get; set; }
+        public string testString2 { get; set; }
     }
 }

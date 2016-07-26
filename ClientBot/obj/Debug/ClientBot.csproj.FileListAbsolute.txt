@@ -8,3 +8,13 @@ c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\ob
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\bin\Debug\ShareData.dll
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ClientBot\bin\Debug\ShareData.pdb
 C:\Users\leejaelin\Documents\Visual Studio 2015\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.csprojResolveAssemblyReference.cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\bin\Debug\ClientBot.exe.config
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.exe
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.csprojResolveAssemblyReference.cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.Properties.Resources.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Debug\ClientBot.csproj.GenerateResource.Cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\bin\Debug\ClientBot.exe
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\bin\Debug\ClientBot.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\bin\Debug\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\bin\Debug\ShareData.dll
