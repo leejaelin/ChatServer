@@ -10,3 +10,4 @@ C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\b
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Release\ShareData.pdb
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Release\ChatServer.exe
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Release\ChatServer.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Release\ChatServer.csprojResolveAssemblyReference.cache

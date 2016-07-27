@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E6343636-D44B-4F5F-A583-D16C67ED7BE4}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ChatServer</RootNamespace>
     <AssemblyName>ChatServer</AssemblyName>
@@ -33,11 +33,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ShareData, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ShareData\bin\Debug\ShareData.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,12 +51,21 @@
     <Compile Include="ChatServer\Network.cs" />
     <Compile Include="Data\User\User.cs" />
     <Compile Include="Data\User\UserContainer.cs" />
+    <Compile Include="Data\User\UserState\IUserState.cs" />
+    <Compile Include="Data\User\UserState\LoginedState.cs" />
+    <Compile Include="Data\User\UserState\LoginingState.cs" />
     <Compile Include="Lib\Singleton\Singleton.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ShareData\ShareData.csproj">
+      <Project>{ea3b1e44-6329-4a80-b9c3-f605191a4ae2}</Project>
+      <Name>ShareData</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

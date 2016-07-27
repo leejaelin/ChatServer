@@ -5,6 +5,7 @@ using ChatServer.Lib.Singleton;
 using ShareData;
 using ShareData.Message;
 using System.Threading;
+using ChatServer.Data.User;
 
 namespace ChatServer.ChatServer
 {
@@ -21,23 +22,13 @@ namespace ChatServer.ChatServer
 
         public void TryPushBack( Message message )
         {
-            //m_mutex.WaitOne();
-            //try
-            //{
             lock( m_Lock )
             {
                 m_JobQueue.Add(message);
             }
-            //}
-            //catch (Exception e) { }
-            //finally 
-            //{
-            //    m_mutex.ReleaseMutex();
-            //}
         }
-
-
-        public void itQueue()
+        
+        public void PopQueue()
         {
             lock (m_Lock)
             {

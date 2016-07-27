@@ -1,24 +1,53 @@
-﻿using System.Net.Sockets;
+﻿using ChatServer.Data.User.UserState;
+using System.Net.Sockets;
 
 namespace ChatServer.Data.User
 {
     class User
     {
-        public User( int ipAddr, int ConnIdx, Socket socket )
+        // constructor
+        public User( int ip, int ConnIdx, Socket socket )
         {
-            this.ipAddr = ipAddr;
-            this.ConnIdx = ConnIdx;
-            buffer = new byte[4096];
+            ipAddr = ip;
+            Index = ConnIdx;
             clientSocket = socket;
+            buffer = new byte[4096];
+            userState = null;
         }
-        private int ipAddr { get; set; }
-        private int ConnIdx { get; set; }
-        private byte[] buffer { get; set; }
-        private Socket clientSocket { get; set; }
 
-        public int GetIndex() { return ConnIdx; }
-        public byte[] GetBuffer() { return buffer; }
-        public Socket GetSocket() { return clientSocket; }
+        // public property
+        public int ipAddr
+        {
+            get;
+            set;
+        }
 
+        public int Index
+        {
+            get;
+            set;
+        }
+
+        public Socket clientSocket
+        {
+            get;
+            set;
+        }
+
+        public byte[] buffer
+        {
+            get;
+            set;
+        }
+
+        public IUserState userState
+        {
+            get;
+            set;
+        }
+
+        // public method
+        public void OnClose() { UserContainer.Instance.Pop(this.Index); }
+        
     }
 }

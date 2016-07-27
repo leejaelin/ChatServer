@@ -2,6 +2,7 @@
 using ShareData;
 using ShareData.Message;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -24,36 +25,54 @@ namespace ChatServer.ChatServer
 
         public void receiveProc(IAsyncResult ar)
         {
-            User user = (User)ar.AsyncState;
-            if (user == null)
+            if (ar == null || ar.AsyncState == null)
                 return;
 
-            int recvBytes = user.GetSocket().EndReceive(ar);
-            if (recvBytes > 0)
+            User user = (User)ar.AsyncState;
+
+            try
             {
-                MemoryStream stream = new MemoryStream(user.GetBuffer());
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                Object obj = binaryFormatter.Deserialize(stream);
+                int recvBytes = user.clientSocket.EndReceive(ar);
+                if (recvBytes > 0)
+                {
+                    MemoryStream stream = new MemoryStream(user.buffer);
+                    BinaryFormatter binaryFormatter = new BinaryFormatter();
+                    Object obj = binaryFormatter.Deserialize(stream);
 
-                // Message Create
-                Message msg = new Message(MessageType.M_PACKET, obj);
-                
-                // Message Queue insert
-                JobQueue.GetInstance().TryPushBack(msg);
+                    // Message Create
+                    Message msg = new Message(MessageType.M_PACKET, obj);
 
-                Array.Clear(user.GetBuffer(), 0, user.GetBuffer().Length);
+                    // Message Queue insert
+                    JobQueue.GetInstance().TryPushBack(msg);
+
+                    Array.Clear(user.buffer, 0, user.buffer.Length);
+                    user.clientSocket.BeginReceive(user.buffer, 0, user.buffer.Length, SocketFlags.None, m_receiveHandle, user);
+                }
+                else
+                {
+                    disconnectProc(user);
+                }
             }
-            user.GetSocket().BeginReceive(user.GetBuffer(), 0, user.GetBuffer().Length, SocketFlags.None, m_receiveHandle, user);
+            catch(Exception /*e*/) 
+            {
+                disconnectProc(user);
+            }
         }
 
         public void acceptProc(IAsyncResult ar)
         {
             Socket client = m_listener.EndAccept(ar);
             User user = new User(0, UserCnt++, client);
-            Data.User.UserContainer.GetInstance().Insert(user);
 
-            client.BeginReceive(user.GetBuffer(), 0, user.GetBuffer().Length, SocketFlags.None, m_receiveHandle, user);
+            client.BeginReceive(user.buffer, 0, user.buffer.Length, SocketFlags.None, m_receiveHandle, user);
             m_listener.BeginAccept(m_acceptHandle, null);
+        }
+
+        private void disconnectProc( User user )
+        {
+            UserContainer.Instance.Pop(user.Index);
+            user.clientSocket.Shutdown(SocketShutdown.Both);
+            user.clientSocket.Close();
         }
 
         public void StartServer()
@@ -63,8 +82,7 @@ namespace ChatServer.ChatServer
 
             // Socket
             const int port = 12345;
-            IPAddress ipAddr = Dns.Resolve("localhost").AddressList[0];
-            //IPAddress ipAddr = (IPAddress)Dns.GetHostEntry(Dns.GetHostName()).AddressList.GetValue(1);
+            IPAddress ipAddr = (IPAddress)Dns.GetHostEntry(Dns.GetHostName()).AddressList.GetValue(1);
             IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
 
             // Listen
@@ -81,7 +99,7 @@ namespace ChatServer.ChatServer
             }
 
             // Accept
-            var UserContainer = Data.User.UserContainer.GetInstance();
+            var UserContainer = Data.User.UserContainer.Instance;
             Thread AcceptThread = new Thread(new ThreadStart(
                 () =>
                 {
@@ -97,3 +115,4 @@ namespace ChatServer.ChatServer
         }
     }
 }
+

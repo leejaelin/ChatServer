@@ -4,10 +4,11 @@ namespace ShareData.Message
 {
     public enum MessageType
     {
-        M_PING      = 0x01,
-        M_PACKET    = 0x02,
+        M_PING = 0x01,
+        M_PACKET = 0x02,
         M_PROCEDURE = 0x03,
-        M_ALARM     = 0x04,
+        M_ALARM = 0x04,
+        M_USER_DISCONN = 0x05,
     }
 
     public class Message

@@ -7,6 +7,8 @@ namespace ShareData
     public enum PACKET_INDEX
     {
         TESTPACKET = 0,
+        CQ_LOGIN,
+        SN_LOGIN,
     }
 
     [Serializable]
@@ -29,5 +31,38 @@ namespace ShareData
             bf.Serialize(s, o);
             return (int)s.Length;
         }
+    }
+
+    [Serializable]
+    public class CQ_LOGIN : Packet
+    {
+        public CQ_LOGIN() : base(PACKET_INDEX.CQ_LOGIN)
+        {
+        }
+
+        public enum E_LOGIN_TYPE
+        {
+            USER = 0,
+            BOT = 1,
+        }
+        public string id;
+        public string pw;
+        public E_LOGIN_TYPE type;
+    }
+
+    [Serializable]
+    public class SN_LOGIN : Packet
+    {
+        public enum E_RESULT
+        {
+            FAIL = -1,
+            SUCCESS = 0,
+        }
+        public SN_LOGIN()
+            : base(PACKET_INDEX.SN_LOGIN)
+        {
+        }
+
+        public E_RESULT type;
     }
 }
