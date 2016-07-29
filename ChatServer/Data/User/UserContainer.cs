@@ -10,12 +10,6 @@ namespace ChatServer.Data.User
 {
     class UserContainer
     {
-        public UserContainer()
-        {
-            this.userContainer = new Dictionary<int, User>();
-            this.userContainer.Clear();
-        }
-
         #region Singleton
         private static UserContainer m_instance;
         public static UserContainer Instance
@@ -28,6 +22,12 @@ namespace ChatServer.Data.User
             }
         }
         #endregion
+
+        public UserContainer()
+        {
+            this.userContainer = new Dictionary<int, User>();
+            this.userContainer.Clear();
+        }
 
         public void Insert( User user )
         {

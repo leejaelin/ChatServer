@@ -10,14 +10,13 @@ namespace ChatServer
     {
         static void Main(string[] args)
         {
-            Network ntw = new Network();
-            ntw.StartServer();
-
+            Launcher launcher = new Launcher();
+            launcher.Start();
             // 메인 스레드 정지
             //Thread.Sleep(Timeout.Infinite);
             while (true)
             {
-                JobQueue.GetInstance().PopQueue();
+                //ShareData.CommonLogic.JobQueue.Instance.PopQueue();
             }
         }
     }

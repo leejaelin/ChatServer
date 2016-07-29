@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonLogic\JobQueue\JobQueue.cs" />
+    <Compile Include="CommonLogic\Network\Network.cs" />
     <Compile Include="Message\Message.cs" />
     <Compile Include="Packet\Packet.cs" />
     <Compile Include="TestPacket.cs" />

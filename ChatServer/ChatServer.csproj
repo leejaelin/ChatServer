@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E6343636-D44B-4F5F-A583-D16C67ED7BE4}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ChatServer</RootNamespace>
     <AssemblyName>ChatServer</AssemblyName>
@@ -47,8 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChatServer\JobQueue.cs" />
-    <Compile Include="ChatServer\Network.cs" />
+    <Compile Include="ChatServer\ChatServer.cs" />
+    <Compile Include="ChatServer\Launcher.cs" />
     <Compile Include="Data\User\User.cs" />
     <Compile Include="Data\User\UserContainer.cs" />
     <Compile Include="Data\User\UserState\IUserState.cs" />

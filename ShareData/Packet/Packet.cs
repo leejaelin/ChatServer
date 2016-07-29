@@ -36,7 +36,8 @@ namespace ShareData
     [Serializable]
     public class CQ_LOGIN : Packet
     {
-        public CQ_LOGIN() : base(PACKET_INDEX.CQ_LOGIN)
+        public CQ_LOGIN()
+            : base(PACKET_INDEX.CQ_LOGIN)
         {
         }
 
@@ -45,6 +46,7 @@ namespace ShareData
             USER = 0,
             BOT = 1,
         }
+
         public string id;
         public string pw;
         public E_LOGIN_TYPE type;
@@ -58,11 +60,12 @@ namespace ShareData
             FAIL = -1,
             SUCCESS = 0,
         }
+
         public SN_LOGIN()
             : base(PACKET_INDEX.SN_LOGIN)
         {
         }
 
-        public E_RESULT type;
+        public E_RESULT result;
     }
 }
