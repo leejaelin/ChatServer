@@ -49,6 +49,10 @@
   <ItemGroup>
     <Compile Include="ChatServer\ChatServer.cs" />
     <Compile Include="ChatServer\Launcher.cs" />
+    <Compile Include="ChatServer\Process\IProcess.cs" />
+    <Compile Include="ChatServer\Process\PacketProcess.cs" />
+    <Compile Include="ChatServer\Process\ProcedureProcess.cs" />
+    <Compile Include="ChatServer\Process\UserInOutProcess.cs" />
     <Compile Include="Data\User\User.cs" />
     <Compile Include="Data\User\UserContainer.cs" />
     <Compile Include="Data\User\UserState\IUserState.cs" />

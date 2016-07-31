@@ -4,27 +4,100 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
+using System.Collections.Generic;
+using ShareData.Message;
 
 namespace ShareData.CommonLogic.Network
 {
+    public class AsyncObject
+    {
+        public AsyncObject(Socket socket, uint idx = 0)
+        {
+            this.idx = idx;
+            this.socket = socket;
+        }
+        ~AsyncObject() { }
+
+        private uint idx; // 서버에서 필요 하다. conn, receive시 유저 구분을 위한 용도
+        public uint Idx { get { return idx; } }
+        private Socket socket;
+        public Socket Socket { get { return socket; } }
+    }
+
     public class Network
     {
-        System.Diagnostics.Trace trace; //로그 남기는 객체
+        //System.Diagnostics.Trace trace; //로그 남기는 객체
+        #region const variable
         const string IP = "127.0.0.1";
         const int PORT = 12345;
+        const int BUFFER_SIZE = 4096;
+        #endregion
+
+        #region Constructor / Destructor
+        // constructor
         public Network()
         {
             socket = null;
-            Buffer = new byte[4096];
+            SendBuffer = new byte[BUFFER_SIZE];
+            ReceiveBuffer = new byte[BUFFER_SIZE];
+            JobQueue = new JobQueue.JobQueue();
+
             m_connectHandle = new AsyncCallback(connProc);
             m_acceptHandle = new AsyncCallback(acceptProc);
             m_disconnectHandle = new AsyncCallback(disconnectProc);
             m_sendHandle = new AsyncCallback(sendProc);
             m_receiveHandle = new AsyncCallback(receiveProc);
-        }
 
-        public Socket socket { get; private set; }
-        public byte[] Buffer { get; set; }
+            // server only
+            userSocketList = new Dictionary<uint, Socket>();
+            socketIdx = 0;
+
+            // client only
+            m_connected = false;
+        }
+        // destructor
+        ~Network()
+        {
+            socket = null;
+            SendBuffer = null;
+            ReceiveBuffer = null;
+            JobQueue = null;
+
+            m_connectHandle = null;
+            m_acceptHandle = null;
+            m_disconnectHandle = null;
+            m_sendHandle = null;
+            m_receiveHandle = null;
+
+            // server only
+            userSocketList = null;
+        }
+        #endregion
+
+        #region variable
+        // member variable
+        private AsyncCallback m_connectHandle;
+        private AsyncCallback m_acceptHandle;
+        private AsyncCallback m_disconnectHandle;
+        private AsyncCallback m_sendHandle;
+        private AsyncCallback m_receiveHandle;
+
+        public Socket socket { get; set; }
+        public byte[] SendBuffer { get; set; }
+        public byte[] ReceiveBuffer { get; set; }
+        public JobQueue.JobQueue JobQueue { get; set; }
+
+        // server only variable
+        private Dictionary<uint, Socket> userSocketList; // 서버에서 가지는 유저 소켓 리스트
+        public uint socketIdx; // 서버에서 가지는 소켓의 개수
+
+        // Client only variable
+        private bool m_connected; // socket의 connect를 비교하면 멀티스레드에서의 처리 순서때문에 문제가 발생하여, 따로 관리해준다.
+        public bool GetConnectedToServer()
+        {
+            return m_connected;
+        }
+        #endregion
 
         // (client) 동기 서버 접속을 시작 하는 함수
         public void TryConnect()
@@ -33,85 +106,101 @@ namespace ShareData.CommonLogic.Network
         // (client) 비동기 서버 접속을 시작 하는 함수
         public void BeginConnect()
         {
-            IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(IP), PORT);
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.BeginConnect(ipep, m_connectHandle, socket);
+            //**socket.BeginConnect(IP, PORT, m_connectHandle, socket);
+            socket.BeginConnect(IP, PORT, m_connectHandle, new AsyncObject(socket));
         }
-
-        #region
-        /// <summary>
-        /// AsyncCallback
-        /// </summary>
-
-        // variable
-        private AsyncCallback m_connectHandle;
-        private AsyncCallback m_acceptHandle;
-        private AsyncCallback m_disconnectHandle;
-        private AsyncCallback m_sendHandle;
-        private AsyncCallback m_receiveHandle;
-        private int serverInitCnt = 0;
+        
+        #region AsyncCallback
         // method
         // (client) 비동기로 서버에 접속할때 호출될 콜백 함수
         public void connProc(IAsyncResult ar)
         {
-            Socket clientSocket = (Socket)ar.AsyncState;
-            try
+            //**Socket serverSocket = (Socket)ar.AsyncState;
+            AsyncObject serverObject = (AsyncObject)ar.AsyncState;
+            Socket serverSocket = serverObject.Socket;
+            if (!serverSocket.Connected)
             {
-                IPEndPoint ipep = (IPEndPoint)clientSocket.RemoteEndPoint; // 서버 정보
-
-                Debug.WriteLine("서버 접속 성공 IP:" + ipep.Address + " Port:" + ipep.Port);
-                clientSocket.EndConnect(ar);
-                socket = clientSocket;
-            }
-            catch (Exception e)
-            {
+                BeginConnect();
                 return;
             }
-            socket.Disconnect(true);
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close(0);
-            // Begin Receive
-            //clientSocket.BeginReceive(Buffer, 0, Buffer.Length, SocketFlags.None, m_receiveHandle, clientSocket);
+            try
+            {
+                IPEndPoint ipep = (IPEndPoint)serverSocket.RemoteEndPoint; // 서버 정보
+                Debug.WriteLine("서버 접속 성공 IP:" + ipep.Address + " Port:" + ipep.Port);
+                serverSocket.EndConnect(ar);
+                socket = serverSocket;
+
+                // Begin Receive
+                serverSocket.BeginReceive(ReceiveBuffer, 0, ReceiveBuffer.Length, SocketFlags.None, m_receiveHandle, serverObject); //**
+                m_connected = true;
+            }
+            catch( SocketException /*e*/ ) // 연결중에 서버가 다운되거나 해서 소켓이 끊어지는 케이스
+            {
+                BeginConnect();
+                return;
+            }
         }
 
         // (server) 유저가 서버 접근할때 호출될 콜백함수
         public void acceptProc(IAsyncResult ar)
         {
-            Socket client = socket.EndAccept(ar);
+            Socket client = null;
+            try
+            {
+                client = socket.EndAccept(ar);
+                Console.WriteLine("유저 접속 : " + client.RemoteEndPoint.ToString());
+            }
+            catch(SocketException e)
+            {
+                Console.WriteLine(e.ErrorCode + " " + e.Message);
+                return;
+            }
 
-            // 유저가 들어 왔으므로 유저 컨테이너에 넣어주거나 메시지 큐를 만들어 주어야 한다.
+            uint userSocketIdx = socketIdx++;
+            userSocketList.Add(userSocketIdx, client);
+
+            JobQueue.TryPushBack(new Message.Message(userSocketIdx, MessageType.M_USER_IN_OUT, new object(), client));
 
             // Begin Accept
             socket.BeginAccept(m_acceptHandle, null);
-            serverInitCnt++;
-
+                        
             // Begin Receive
-            client.BeginReceive(Buffer, 0, Buffer.Length, SocketFlags.None, m_receiveHandle, socket);
+            client.BeginReceive(ReceiveBuffer, 0, ReceiveBuffer.Length, SocketFlags.None, m_receiveHandle, new AsyncObject(client, userSocketIdx)); //**
         }
 
         // (server) 유저가 서버 연결 종료시 호출될 콜백함수
         private void disconnectProc(IAsyncResult ar)
         {
-            Socket client = (Socket)ar.AsyncState;
+            //**Socket clientSocket = (Socket)ar.AsyncState;
+            AsyncObject clientObj = (AsyncObject)ar.AsyncState;
+            Socket clientSocket = clientObj.Socket;
 
-            //client.EndDisconnect(ar);
-            // 유저가 나갔으므로 유저컨테이너에서 빼주기 위한 메시지를 큐에 넣어 주어야 한다.
+            userSocketList.Remove(clientObj.Idx);
+            JobQueue.TryPushBack(new Message.Message(clientObj.Idx, MessageType.M_USER_IN_OUT, null, clientSocket));
 
-            //client.Shutdown(SocketShutdown.Both);
-            client.Close();
-            client.Dispose();
+            clientSocket.Shutdown(SocketShutdown.Both);
+            clientSocket.Close();
+            clientSocket.Dispose();
         }
 
         // (client/server) 비동기로 송신할때 호출될 콜백 함수
         public void sendProc(IAsyncResult ar)
         {
+            //**Socket sendSocket = (Socket)ar.AsyncState;
+            AsyncObject sendObj = (AsyncObject)ar.AsyncState;
+            Socket sendSocket = sendObj.Socket;
+
+            if (sendSocket == null || !sendSocket.Connected)
+                return;
+
+            if (!socket.Connected)
+                return;
+
             int sendBytes;
             try
             {
-                if (!socket.Connected)
-                    return;
-
-                // 메시지 전송
+                // 메시지 전송;
                 sendBytes = socket.EndSend(ar);
             }
             catch (Exception e)
@@ -129,55 +218,84 @@ namespace ShareData.CommonLogic.Network
         // (client/server) 비동기로 수신할때 호출될 콜백 함수
         public void receiveProc(IAsyncResult ar)
         {
-            Socket client = (Socket)ar.AsyncState;
+            //**Socket receiveSocket = (Socket)ar.AsyncState;
+            AsyncObject receiveObj = (AsyncObject)ar.AsyncState;
+            Socket receiveSocket = receiveObj.Socket;
+
+            if (!receiveSocket.Connected)
+                return;
+
             try
             {
-                int recvBytes = client.EndReceive(ar);
+                int recvBytes = receiveSocket.EndReceive(ar);
                 if (recvBytes > 0)
                 {
                     // receive Buffer Deserialize
-                    MemoryStream stream = new MemoryStream(Buffer);
+                    MemoryStream stream = new MemoryStream(ReceiveBuffer);
                     BinaryFormatter binaryFormatter = new BinaryFormatter();
                     Object obj = binaryFormatter.Deserialize(stream);
 
                     // Message Create
-                    Message.Message msg = new Message.Message(Message.MessageType.M_PACKET, obj);
+                    Message.Message msg = new Message.Message(receiveObj.Idx, Message.MessageType.M_PACKET, obj, receiveSocket);
 
                     // Message Queue insert
-                    JobQueue.JobQueue.Instance.TryPushBack(msg);
+                    JobQueue.TryPushBack(msg);
 
                     // Clear Buffer
-                    Array.Clear(Buffer, 0, Buffer.Length);
+                    Array.Clear(ReceiveBuffer, 0, ReceiveBuffer.Length);
 
                     // Begin Receive
-                    client.BeginReceive(Buffer, 0, Buffer.Length, SocketFlags.None, m_receiveHandle, client);
+                    receiveSocket.BeginReceive(ReceiveBuffer, 0, ReceiveBuffer.Length, SocketFlags.None, m_receiveHandle, receiveObj); //**
+
+                    return;
                 }
                 else
                 {
-                    // Begin Disconnect
-                    //UserDisconnect(client);
                 }
+            }
+            catch (ObjectDisposedException /*e*/)
+            {
             }
             catch (Exception /*e*/)
             {
-                // Begin Disconnect
-                //UserDisconnect(client);                
             }
+            UserDisconnect(receiveObj);
         }
         #endregion
 
-        private void sendPacket(Packet packet)
+        // (client->server) 일방적으로 연결 종료 처리
+        public void Close()
         {
-            MemoryStream mStream = new MemoryStream();
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            binaryFormatter.Serialize(mStream, packet);
-            Buffer = mStream.ToArray();
-            socket.BeginSend(Buffer, 0, Buffer.Length, SocketFlags.None, m_sendHandle, (object)this);
+            if(socket.Connected)
+            {
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close(0);
+                socket.Dispose();
+            }
+            socket = null;
+            m_connected = false;
         }
+
+        protected void sendPacket(Packet packet)
+        {
+            if (!socket.Connected)
+                return;
+
+            try
+            {
+                MemoryStream mStream = new MemoryStream();
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(mStream, packet);
+                SendBuffer = mStream.ToArray();
+                socket.BeginSend(SendBuffer, 0, SendBuffer.Length, SocketFlags.None, m_sendHandle, new AsyncObject(socket));
+            }
+            catch(SocketException /*e*/)
+            {
+
+            }
+        }
+
         #region Server Side
-        /// <summary>
-        /// 서버에서만 사용 되는 Network 모듈 입니다.
-        /// </summary>
         public void StartServer()
         {
             serverInit();  
@@ -185,13 +303,12 @@ namespace ShareData.CommonLogic.Network
 
         private void serverInit()
         {
-            // Socket
+            // Address, EndPoint
             const int port = 12345;
-            //IPAddress ipAddr = (IPAddress)Dns.GetHostEntry(Dns.GetHostName()).AddressList.GetValue(1);
             IPAddress ipAddr = IPAddress.Parse(IP);
             IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
 
-            // Listen
+            // Socket Create, Bind, Listen
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
             {
@@ -208,17 +325,18 @@ namespace ShareData.CommonLogic.Network
             socket.BeginAccept(m_acceptHandle, null);
         }
 
-        public void UserDisconnect(Socket socket)
+        public void UserDisconnect(AsyncObject asyncObj)
         {
-            try
+            Socket socket = asyncObj.Socket;
+            if (socket.Connected)
             {
                 socket.Shutdown(SocketShutdown.Both);
-            }
-            catch(Exception e)
-            {
                 socket.Close(0);
                 socket.Dispose();
             }
+            userSocketList.Remove(asyncObj.Idx);
+            JobQueue.TryPushBack(new Message.Message(asyncObj.Idx, MessageType.M_USER_IN_OUT, null, socket));
+            socket = null;          
         }
         #endregion
     }

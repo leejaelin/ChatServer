@@ -1,4 +1,5 @@
 ﻿using ChatServer.Data.User.UserState;
+using ShareData;
 using System.Net.Sockets;
 
 namespace ChatServer.Data.User
@@ -6,48 +7,42 @@ namespace ChatServer.Data.User
     class User
     {
         // constructor
-        public User( int ip, int ConnIdx, Socket socket )
+        public User( uint connIdx, Socket socket )
         {
-            ipAddr = ip;
-            Index = ConnIdx;
-            clientSocket = socket;
-            buffer = new byte[4096];
-            userState = null;
+            Index = connIdx;
+            ClientSocket = socket;
+            State = LoginingState.Instance;
         }
 
-        // public property
-        public int ipAddr
+        // member variable
+
+        private uint index;
+        public uint Index
         {
-            get;
-            set;
+            get { return index; }
+            set { index = value; }
         }
 
-        public int Index
+        private Socket clientSocket;
+        public Socket ClientSocket
         {
-            get;
-            set;
+            get { return clientSocket; }
+            set { clientSocket = value; }
         }
 
-        public Socket clientSocket
+        private IUserState state;
+        public IUserState State
         {
-            get;
-            set;
-        }
-
-        public byte[] buffer
-        {
-            get;
-            set;
-        }
-
-        public IUserState userState
-        {
-            get;
-            set;
+            get { return state; }
+            set
+            {
+                state = value;
+                state.OnEntry();
+            }
         }
 
         // public method
+        public void DoSend(Packet packet) {  }
         public void OnClose() { UserContainer.Instance.Pop(this.Index); }
-        
     }
 }

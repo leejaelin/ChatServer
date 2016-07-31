@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-
-using ShareData;
-using ShareData.Message;
-using System.Threading;
+﻿using System.Collections.Generic;
 
 namespace ShareData.CommonLogic.JobQueue
 {
-    class JobQueue
+    public class JobQueue
     {
-        #region Singleton
-        public static JobQueue Instance
-        {
-            private set { Instance = value; }
-            get
-            {
-                if (Instance == null)
-                    Instance = new JobQueue();
-                return Instance;
-            }
-        }
-        #endregion
+        //#region Singleton
+        //private static JobQueue instance;
+        //public static JobQueue Instance
+        //{
+        //    get
+        //    {
+        //        if (instance == null)
+        //            instance = new JobQueue();
+        //        return instance;
+        //    }
+        //    private set { instance = value; }
+        //}
+        //#endregion
 
         private List<Message.Message> m_JobQueue;
         private readonly object m_Lock;
@@ -39,18 +35,16 @@ namespace ShareData.CommonLogic.JobQueue
             }
         }
 
-        public void TryPopFront()
+        public Message.Message TryPopFront()
         {
             lock (m_Lock)
             {
-                while (m_JobQueue.Count > 0)
-                {
-                    Message.Message msg = m_JobQueue[0];
-                    m_JobQueue.RemoveAt(0);
+                if (m_JobQueue.Count <= 0)
+                    return null;
 
-                    // msg가 큐 맨앞에 있던 메시지 이다.
-                    // 이 곳에서 분기 태워서 처리한다.
-                }
+                Message.Message msg = m_JobQueue[0];
+                m_JobQueue.RemoveAt(0);
+                return msg;
             }
         }
     }

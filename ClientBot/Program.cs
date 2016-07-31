@@ -5,7 +5,7 @@ namespace ClientBot
 {
     class Program
     {
-        const int BOT_COUNT = 8;
+        const int BOT_COUNT = 1;
 
         static void Main(string[] args)
         {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ChatServer.ChatServer
+﻿namespace ChatServer.ChatServer
 {
     class Launcher
     {
@@ -19,6 +13,7 @@ namespace ChatServer.ChatServer
         public void Start()
         {
             m_chatServer.StartServer();
+            m_chatServer.JobLoop();
         }
     }
 }

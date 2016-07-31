@@ -1,14 +1,25 @@
 ﻿using System;
 using System.IO;
+using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ShareData
 {
+    public enum PACKET_CATEGORY
+    {
+        USER = 0,
+        CHAT = 10000,
+        ROOM = 20000,
+    }
     public enum PACKET_INDEX
     {
-        TESTPACKET = 0,
+        PACKET_INDEX_BEGIN = PACKET_CATEGORY.USER,
+
+        TESTPACKET = PACKET_INDEX_BEGIN+1,
         CQ_LOGIN,
         SN_LOGIN,
+
+        PACKET_INDEX_END,
     }
 
     [Serializable]
@@ -21,6 +32,11 @@ namespace ShareData
         {
             this.index = index;
             this.length = GetPacketSize();
+        }
+
+        public int GetPacketIndex()
+        {
+            return (int)index;
         }
 
         public virtual int GetPacketSize()
@@ -50,6 +66,9 @@ namespace ShareData
         public string id;
         public string pw;
         public E_LOGIN_TYPE type;
+
+        public uint Index;
+        public Socket socket;
     }
 
     [Serializable]

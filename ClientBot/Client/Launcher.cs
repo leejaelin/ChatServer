@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ClientBot.Client
@@ -36,19 +33,21 @@ namespace ClientBot.Client
         {
             createBot();
             helloMessage();
+
+            while(true)
+            {
+                Do();
+            }
         }
 
         private void createBot()
         {
             for (int i = 0; i < m_botCount; ++i)
             {
-                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
                 try
                 {
                     // Client 생성
                     Client client = new Client(m_botCount);
-                    client.BeginConnect();
                     m_botClients.Add(i, client);
                 }
                 catch (Exception /*e*/)
@@ -74,22 +73,29 @@ namespace ClientBot.Client
 
         public void Do()
         {
-            if (m_botClients.Count > 1000000)
+            var clients = m_botClients;
+
+            if (clients.Count > 1000000)
             {
-                Parallel.For(0, m_botClients.Count, (idx) =>
+                Parallel.For(0, clients.Count, (idx) =>
                 {
-                    var client = m_botClients[idx];
-                    client.Do();
+                    var client = clients[idx];
+                    client.Do(this);
                 });
             }
             else
             {
-                for (int i = 0; i < m_botClients.Count; ++i)
+                for (int i = 0; i < clients.Count; ++i)
                 {
-                    var client = m_botClients[i];
-                    client.Do();
+                    var client = clients[i];
+                    client.Do(this);
                 }
             }
+        }
+
+        public void ClientsClear()
+        {
+            m_botClients.Clear();
         }
     }
 }

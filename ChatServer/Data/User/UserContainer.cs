@@ -25,26 +25,32 @@ namespace ChatServer.Data.User
 
         public UserContainer()
         {
-            this.userContainer = new Dictionary<int, User>();
-            this.userContainer.Clear();
+            userContainer = new Dictionary<uint, User>();
+            userContainer.Clear();
         }
 
         public void Insert( User user )
         {
-            this.userContainer.Add(user.Index, user);
+            userContainer.Add(user.Index, user);
         }
-        public User Find( int idx )
+        public User Find( uint idx )
         {
             User user;
-            this.userContainer.TryGetValue(idx, out user);
+            userContainer.TryGetValue(idx, out user);
             return user != null ? user : null;
         }
-        public void Pop( int idx )
+        public void Pop( uint idx )
         {
-            this.userContainer.Remove(idx);
+            try
+            {
+                userContainer.Remove(idx);
+            }
+            catch(Exception e)
+            {
+                return;
+            }
         }
 
-        private Dictionary<int, User> userContainer;
-
+        private Dictionary<uint, User> userContainer;
     }
 }
