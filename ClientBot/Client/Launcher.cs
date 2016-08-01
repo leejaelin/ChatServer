@@ -14,7 +14,7 @@ namespace ClientBot.Client
 
         private E_MODE m_mode;
         private int m_botCount;
-        private Dictionary<int, Client> m_botClients;
+        private Dictionary<int, Client> m_Clients;
         public static int connFailCount = 0;
 
         public Launcher(E_MODE mode, int botCount)
@@ -24,7 +24,7 @@ namespace ClientBot.Client
 
             if (mode == E_MODE.BOT) // 봇 모드 일때에만 초기화
             {
-                m_botClients = new Dictionary<int, Client>();
+                m_Clients = new Dictionary<int, Client>();
             }
         }
 
@@ -48,7 +48,7 @@ namespace ClientBot.Client
                 {
                     // Client 생성
                     Client client = new Client(m_botCount);
-                    m_botClients.Add(i, client);
+                    m_Clients.Add(i, client);
                 }
                 catch (Exception /*e*/)
                 {
@@ -73,7 +73,7 @@ namespace ClientBot.Client
 
         public void Do()
         {
-            var clients = m_botClients;
+            var clients = m_Clients;
 
             if (clients.Count > 1000000)
             {
@@ -95,7 +95,7 @@ namespace ClientBot.Client
 
         public void ClientsClear()
         {
-            m_botClients.Clear();
+            m_Clients.Clear();
         }
     }
 }

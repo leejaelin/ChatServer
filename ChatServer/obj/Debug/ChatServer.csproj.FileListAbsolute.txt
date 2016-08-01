@@ -9,7 +9,6 @@ C:\Users\leejaelin\Documents\Visual Studio 2015\Projects\ChatServer\ChatServer\o
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Debug\ChatServer.exe.config
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Debug\ChatServer.exe
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Debug\ChatServer.pdb
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Debug\ChatServer.csprojResolveAssemblyReference.cache
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Debug\ChatServer.exe
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Debug\ChatServer.pdb
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\bin\Debug\ShareData.pdb
@@ -22,3 +21,4 @@ C:\Users\leejaelin\Documents\ChatServer\ChatServer\bin\Debug\ChatServer.exe.conf
 C:\Users\leejaelin\Documents\ChatServer\ChatServer\obj\Debug\ChatServer.csprojResolveAssemblyReference.cache
 C:\Users\leejaelin\Documents\ChatServer\ChatServer\obj\Debug\ChatServer.exe
 C:\Users\leejaelin\Documents\ChatServer\ChatServer\obj\Debug\ChatServer.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatServer\obj\Debug\ChatServer.csprojResolveAssemblyReference.cache

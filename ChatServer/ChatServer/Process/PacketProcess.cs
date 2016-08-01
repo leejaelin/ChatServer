@@ -5,7 +5,7 @@ using ShareData.Message;
 using System;
 using System.Collections.Generic;
 
-namespace ChatServer.ChatServer.Process
+namespace ChatServer.Process
 {
     class PacketProcess : IProcess
     {
@@ -56,6 +56,11 @@ namespace ChatServer.ChatServer.Process
         {
             TestPacket req = (TestPacket)packet;
             Console.WriteLine(req.testString);
+            
+            SA_LOGIN ack = new SA_LOGIN();
+            ack.result = 0;
+            user.DoSend(ack);
+
             return true;
         }
 
@@ -65,6 +70,10 @@ namespace ChatServer.ChatServer.Process
             Console.WriteLine( "ID : " + req.id);
 
             user.State = LoginedState.Instance;
+
+            SA_LOGIN ack = new SA_LOGIN();
+            ack.result = 0;
+            user.DoSend(ack);
             return true;
         }
     }

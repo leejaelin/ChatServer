@@ -1,4 +1,4 @@
-﻿using ClientBot.Client;
+﻿using Client;
 using System;
 using System.Windows.Forms;
 
@@ -14,7 +14,7 @@ namespace ChatClient
 
         private void button1_Click(object sender, EventArgs e)
         {
-            launcher = new Launcher(Launcher.E_MODE.BOT, 10);
+            launcher = new Launcher(Launcher.E_MODE.STANDALONE, 1);
             launcher.Start();
         }
 

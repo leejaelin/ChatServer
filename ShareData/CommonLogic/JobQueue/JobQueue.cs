@@ -33,6 +33,9 @@ namespace ShareData.CommonLogic.JobQueue
             {
                 m_JobQueue.Add(message);
             }
+            
+            // wait 상태의 메인 스레드를 깨우는 호출
+
         }
 
         public Message.Message TryPopFront()
@@ -46,6 +49,12 @@ namespace ShareData.CommonLogic.JobQueue
                 m_JobQueue.RemoveAt(0);
                 return msg;
             }
+        }
+
+        public int GetTryGetQueueCount()
+        {
+            lock(m_Lock)
+                return m_JobQueue.Count;
         }
     }
 }

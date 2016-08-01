@@ -1,7 +1,9 @@
-﻿using ShareData;
+﻿using ChatServer.Process;
+using ShareData;
 using ShareData.CommonLogic.Network;
+using ShareData.Message;
 
-namespace ClientBot.Client
+namespace Client
 {
     class Client : Network
     {
@@ -28,13 +30,24 @@ namespace ClientBot.Client
                 return;
             }
 
-            if(socket.Connected) // 소켓이 연결 되어 있을때
+            //if(socket.Connected) // 소켓이 연결 되어 있을때
+            //{
+            //    if(GetConnectedToServer()) // 소켓연결+서버연결 완료 되었다면
+            //    {
+            //        Close();
+            //    }
+            //}
+
+            int loopCount = JobQueue.GetTryGetQueueCount();
+            for (int idx = 0; idx < loopCount; ++idx )
             {
-                if(GetConnectedToServer()) // 소켓연결+서버연결 완료 되었다면
-                {
-                    Close();
-                }
+                Message message = JobQueue.TryPopFront();
+                if (message == null)
+                    break;
+
+                PacketProcess.Instance.MsgProcess(message);
             }
+            
         }
     };
 }

@@ -42,7 +42,10 @@ namespace ChatServer.Data.User
         }
 
         // public method
-        public void DoSend(Packet packet) {  }
+        public void DoSend(Packet packet)
+        {
+            ChatServer.Instance.SendPacket(Index, packet);
+        }
         public void OnClose() { UserContainer.Instance.Pop(this.Index); }
     }
 }

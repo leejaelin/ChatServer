@@ -1,13 +1,28 @@
-﻿using ChatServer.ChatServer.Process;
+﻿using ChatServer.Process;
 using ChatServer.Data.User;
 using ShareData.CommonLogic.Network;
 using ShareData.Message;
 using System.Collections.Generic;
+using ShareData;
+using System.Threading;
 
-namespace ChatServer.ChatServer
-{
+namespace ChatServer
+{    
     class ChatServer : Network
     {
+        #region Singleton
+        private static ChatServer m_instance;
+        public static ChatServer Instance
+        {
+            get
+            {
+                if (m_instance == null)
+                    m_instance = new ChatServer();
+                return m_instance;
+            }
+        }
+        #endregion
+
         public ChatServer()
         {
             processList = new Dictionary<MessageType, IProcess>();
@@ -17,6 +32,7 @@ namespace ChatServer.ChatServer
 
         // member variable
         private Dictionary<MessageType, IProcess> processList;
+        private Thread mainThread;
 
         private void init()
         {
@@ -27,11 +43,16 @@ namespace ChatServer.ChatServer
 
         public void JobLoop()
         {
+            mainThread = Thread.CurrentThread;
             while(true)
             {
                 Message message = JobQueue.TryPopFront();
                 if (message == null)
+                {
+                    //Thread.Sleep(Timeout.Infinite)
+                    mainThread.Suspend();
                     continue;
+                }
 
                 MessageProc(message);
             }
@@ -41,6 +62,16 @@ namespace ChatServer.ChatServer
         {
             User user = UserContainer.Instance.Find(message.GetCallerIdx());
             processList[message.GetMessageType()].MsgProcess(user, message);
+        }
+
+        public void SendPacket( uint destIdx, Packet packet )
+        {
+            sendPacket(destIdx, packet);
+        }
+
+        public override void Alive()
+        {
+            mainThread.Resume();
         }
     }
 }

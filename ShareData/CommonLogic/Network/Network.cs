@@ -28,7 +28,7 @@ namespace ShareData.CommonLogic.Network
     {
         //System.Diagnostics.Trace trace; //로그 남기는 객체
         #region const variable
-        const string IP = "127.0.0.1";
+        const string IP = "10.61.201.17";
         const int PORT = 12345;
         const int BUFFER_SIZE = 4096;
         #endregion
@@ -86,6 +86,8 @@ namespace ShareData.CommonLogic.Network
         public byte[] SendBuffer { get; set; }
         public byte[] ReceiveBuffer { get; set; }
         public JobQueue.JobQueue JobQueue { get; set; }
+
+        public virtual void Alive() { }
 
         // server only variable
         private Dictionary<uint, Socket> userSocketList; // 서버에서 가지는 유저 소켓 리스트
@@ -162,6 +164,8 @@ namespace ShareData.CommonLogic.Network
 
             JobQueue.TryPushBack(new Message.Message(userSocketIdx, MessageType.M_USER_IN_OUT, new object(), client));
 
+            Alive();
+
             // Begin Accept
             socket.BeginAccept(m_acceptHandle, null);
                         
@@ -194,14 +198,11 @@ namespace ShareData.CommonLogic.Network
             if (sendSocket == null || !sendSocket.Connected)
                 return;
 
-            if (!socket.Connected)
-                return;
-
             int sendBytes;
             try
             {
                 // 메시지 전송;
-                sendBytes = socket.EndSend(ar);
+                sendBytes = sendSocket.EndSend(ar);
             }
             catch (Exception e)
             {
@@ -276,11 +277,29 @@ namespace ShareData.CommonLogic.Network
             m_connected = false;
         }
 
+        // (client->server)
         protected void sendPacket(Packet packet)
         {
+            // 클라이언트는 서버와 단일 연결 되어 있으므로 바로 보낸다.
             if (!socket.Connected)
                 return;
 
+            send(this.socket, packet);
+        }
+
+        // (server->client)
+        protected void sendPacket(uint destSocketIdx, Packet packet)
+        {
+            // 서버는 목적지 클라이언트의 소켓을 찾아 전송 한다.
+            if ( !userSocketList.ContainsKey(destSocketIdx) )
+                return;
+
+            Socket destSocket = userSocketList[destSocketIdx];
+            send(destSocket, packet);
+        }
+
+        private bool send(Socket socket, Packet packet)
+        {
             try
             {
                 MemoryStream mStream = new MemoryStream();
@@ -289,12 +308,12 @@ namespace ShareData.CommonLogic.Network
                 SendBuffer = mStream.ToArray();
                 socket.BeginSend(SendBuffer, 0, SendBuffer.Length, SocketFlags.None, m_sendHandle, new AsyncObject(socket));
             }
-            catch(SocketException /*e*/)
+            catch (SocketException /*e*/)
             {
-
+                return false;
             }
+            return true;
         }
-
         #region Server Side
         public void StartServer()
         {

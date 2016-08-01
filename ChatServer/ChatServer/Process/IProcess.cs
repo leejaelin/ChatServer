@@ -1,7 +1,7 @@
 ﻿using ChatServer.Data.User;
 using ShareData.Message;
 
-namespace ChatServer.ChatServer.Process
+namespace ChatServer.Process
 {
     interface IProcess
     {

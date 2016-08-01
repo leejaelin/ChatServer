@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ClientBot.Client
+namespace Client
 {
     class Launcher
     {
@@ -13,42 +13,70 @@ namespace ClientBot.Client
         };
 
         private E_MODE m_mode;
-        private int m_botCount;
-        private Dictionary<int, Client> m_botClients;
+
+        private Dictionary<int, Client> m_Clients; // 봇, 싱글 전부 다 쓰인다
+
+        // Bot Mode
+        private int m_clientCount;
+
         public static int connFailCount = 0;
 
-        public Launcher(E_MODE mode, int botCount)
+        public Launcher(E_MODE mode, int clientCount)
         {
             m_mode = mode;
-            m_botCount = botCount;
+            m_Clients = new Dictionary<int, Client>();
 
+            m_clientCount = 1;
             if (mode == E_MODE.BOT) // 봇 모드 일때에만 초기화
             {
-                m_botClients = new Dictionary<int, Client>();
+                m_clientCount = clientCount;
             }
+            
         }
 
         // member methods
         public void Start()
         {
-            createBot();
             helloMessage();
 
-            //while(true)
+            switch (m_mode)
+            {
+                case E_MODE.STANDALONE:
+                    startStandAlone();
+                    break;
+                case E_MODE.BOT:
+                    startBot();
+                    break;
+            }
+
+            while (true)
             {
                 Do();
             }
         }
 
-        private void createBot()
+        private void startStandAlone()
         {
-            for (int i = 0; i < m_botCount; ++i)
+            createClient();
+            if (m_Clients[0] != null)
+            {
+                m_Clients[0].BeginConnect(); // 연결이 안되어 있으면 연결 시작
+                return;
+            }
+        }
+        private void startBot()
+        {
+            createClient();
+        }
+        private void createClient()
+        {
+            for (int i = 0; i < m_clientCount; ++i)
             {
                 try
                 {
                     // Client 생성
-                    Client client = new Client(m_botCount);
-                    m_botClients.Add(i, client);
+                    Client client = new Client(m_clientCount);
+                    m_Clients.Add(i, client);
                 }
                 catch (Exception /*e*/)
                 {
@@ -68,12 +96,12 @@ namespace ClientBot.Client
                     Console.WriteLine("******StandAlone MODE******");
                     break;
             }
-            Console.WriteLine("******Bot Count {0}******", m_botCount);
+            Console.WriteLine("******Bot Count {0}******", m_clientCount);
         }
 
         public void Do()
         {
-            var clients = m_botClients;
+            var clients = m_Clients;
 
             if (clients.Count > 1000000)
             {
@@ -95,7 +123,7 @@ namespace ClientBot.Client
 
         public void SendPacket()
         {
-            var clients = m_botClients;
+            var clients = m_Clients;
             for (int i = 0; i < clients.Count; ++i)
             {
                 var client = clients[i];
@@ -106,7 +134,7 @@ namespace ClientBot.Client
         }
         public void ClientsClear()
         {
-            m_botClients.Clear();
+            m_Clients.Clear();
         }
     }
 }

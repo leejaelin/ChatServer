@@ -17,7 +17,7 @@ namespace ShareData
 
         TESTPACKET = PACKET_INDEX_BEGIN+1,
         CQ_LOGIN,
-        SN_LOGIN,
+        SA_LOGIN,
 
         PACKET_INDEX_END,
     }
@@ -72,7 +72,7 @@ namespace ShareData
     }
 
     [Serializable]
-    public class SN_LOGIN : Packet
+    public class SA_LOGIN : Packet
     {
         public enum E_RESULT
         {
@@ -80,11 +80,12 @@ namespace ShareData
             SUCCESS = 0,
         }
 
-        public SN_LOGIN()
-            : base(PACKET_INDEX.SN_LOGIN)
+        public SA_LOGIN()
+            : base(PACKET_INDEX.SA_LOGIN)
         {
         }
 
         public E_RESULT result;
+        public string testStr;
     }
 }

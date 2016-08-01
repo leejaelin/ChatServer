@@ -1,5 +1,4 @@
-﻿using ChatServer.ChatServer;
-using System.Threading;
+﻿using System.Threading;
 
 namespace ChatServer
 {

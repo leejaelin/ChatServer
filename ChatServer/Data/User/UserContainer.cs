@@ -45,7 +45,7 @@ namespace ChatServer.Data.User
             {
                 userContainer.Remove(idx);
             }
-            catch(Exception e)
+            catch(Exception /*e*/)
             {
                 return;
             }
