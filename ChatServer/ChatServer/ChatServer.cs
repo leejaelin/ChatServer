@@ -26,6 +26,7 @@ namespace ChatServer
         public ChatServer()
         {
             processList = new Dictionary<MessageType, IProcess>();
+            mainThreadEventHandler = new AutoResetEvent(true);
             init();
         }
         ~ChatServer() {}
@@ -33,7 +34,7 @@ namespace ChatServer
         // member variable
         private Dictionary<MessageType, IProcess> processList;
         private Thread mainThread;
-
+        private AutoResetEvent mainThreadEventHandler;
         private void init()
         {
             processList.Add(MessageType.M_PACKET, PacketProcess.Instance);
@@ -50,11 +51,13 @@ namespace ChatServer
                 if (message == null)
                 {
                     //Thread.Sleep(Timeout.Infinite)
-                    mainThread.Suspend();
+                    //mainThread.Suspend();
+                    mainThreadEventHandler.WaitOne();
                     continue;
                 }
 
                 MessageProc(message);
+                
             }
         }
 
@@ -71,7 +74,9 @@ namespace ChatServer
 
         public override void Alive()
         {
-            mainThread.Resume();
+            //if (mainThread.ThreadState == ThreadState.Suspended)
+                //                mainThread.Resume();
+                mainThreadEventHandler.Set();
         }
     }
 }

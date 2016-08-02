@@ -25,8 +25,8 @@ namespace ShareData
     [Serializable]
     public class Packet
     {
-        private PACKET_INDEX index;
-        private int length;
+        public PACKET_INDEX index;
+        public int length;
 
         public Packet(PACKET_INDEX index) 
         {

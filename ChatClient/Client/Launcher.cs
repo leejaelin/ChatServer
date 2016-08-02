@@ -1,11 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client
 {
     class Launcher
     {
+        #region Singleton
+        private static Launcher m_instance;
+        public static Launcher Instance
+        {
+            get
+            {
+                if (m_instance == null)
+                    m_instance = new Launcher();
+                return m_instance;
+            }
+        }
+        #endregion
+
         public enum E_MODE
         {
             STANDALONE = 0,
@@ -13,32 +27,40 @@ namespace Client
         };
 
         private E_MODE m_mode;
-
+        public E_MODE Mode
+        {
+            get { return m_mode; }
+            set { m_mode = value; }
+        }
         private Dictionary<int, Client> m_Clients; // 봇, 싱글 전부 다 쓰인다
-
+        private Thread workerThread;
+        private bool isWorkerThreadRunning;
         // Bot Mode
         private int m_clientCount;
 
-        public static int connFailCount = 0;
-
-        public Launcher(E_MODE mode, int clientCount)
+        public Launcher()
         {
-            m_mode = mode;
+            m_mode = E_MODE.STANDALONE;
             m_Clients = new Dictionary<int, Client>();
-
             m_clientCount = 1;
-            if (mode == E_MODE.BOT) // 봇 모드 일때에만 초기화
-            {
-                m_clientCount = clientCount;
-            }
-            
+            workerThread = new Thread(Jobloop);
+            isWorkerThreadRunning = false;
+        }
+
+        public void Init(E_MODE mode, int clientCount)
+        {
+            if (mode == E_MODE.STANDALONE)
+                return;
+
+            // 봇 모드 일때에만 설정
+            m_mode = mode;
+            m_clientCount = clientCount;
         }
 
         // member methods
         public void Start()
-        {
+        {   
             helloMessage();
-
             switch (m_mode)
             {
                 case E_MODE.STANDALONE:
@@ -49,10 +71,21 @@ namespace Client
                     break;
             }
 
-            while (true)
+            workerThread.Start();            
+        }
+
+        public void Jobloop()
+        {
+            if (isWorkerThreadRunning)
+                return;
+            do 
             {
-                Do();
+                if (!Do())
+                {
+                    Thread.Sleep(100);
+                }
             }
+            while(true);
         }
 
         private void startStandAlone()
@@ -68,6 +101,7 @@ namespace Client
         {
             createClient();
         }
+
         private void createClient()
         {
             for (int i = 0; i < m_clientCount; ++i)
@@ -75,13 +109,20 @@ namespace Client
                 try
                 {
                     // Client 생성
-                    Client client = new Client(m_clientCount);
+                    Client client = new Client(i);
                     m_Clients.Add(i, client);
                 }
                 catch (Exception /*e*/)
                 {
                 }
             }
+            System.Windows.Forms.Timer tm = new System.Windows.Forms.Timer();
+            tm.Interval = 1000;
+            tm.Tick += new System.EventHandler((sender, e) =>
+            {
+                SendPacket();
+            });
+            tm.Start();
         }
 
         private void helloMessage()
@@ -99,26 +140,41 @@ namespace Client
             Console.WriteLine("******Bot Count {0}******", m_clientCount);
         }
 
-        public void Do()
+        public bool Do()
         {
             var clients = m_Clients;
+            bool isRet = false;
 
-            if (clients.Count > 1000000)
+            //Parallel.For(0, clients.Count, (idx) =>
+            //{
+            //    var client = clients[idx];
+            //    isRet &= client.Do(this);
+            //});
+
+            for (int i = 0; i < clients.Count; ++i)
             {
-                Parallel.For(0, clients.Count, (idx) =>
-                {
-                    var client = clients[idx];
-                    client.Do(this);
-                });
+                var client = clients[i];
+                isRet &= client.Do(this);
             }
-            else
-            {
-                for (int i = 0; i < clients.Count; ++i)
-                {
-                    var client = clients[i];
-                    client.Do(this);
-                }
-            }
+
+            return isRet;
+
+            //if (clients.Count > 1000000)
+            //{
+            //    Parallel.For(0, clients.Count, (idx) =>
+            //    {
+            //        var client = clients[idx];
+            //        client.Do(this);
+            //    });
+            //}
+            //else
+            //{
+            //    for (int i = 0; i < clients.Count; ++i)
+            //    {
+            //        var client = clients[i];
+            //        client.Do(this);
+            //    }
+            //}
         }
 
         public void SendPacket()
@@ -128,13 +184,17 @@ namespace Client
             {
                 var client = clients[i];
                 ShareData.TestPacket noti = new ShareData.TestPacket();
-                noti.testString = "HELLO WORLD";
+                noti.testString = "Hello I'm " + i + "th bot!!!";
                 client.SendPacket(noti);
             }
         }
         public void ClientsClear()
         {
             m_Clients.Clear();
+        }
+
+        public void ReleaseJobLoop()
+        {
         }
     }
 }

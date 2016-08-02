@@ -1,0 +1,11 @@
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\bin\Release\ChatClient.exe.config
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\bin\Release\ChatClient.exe
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\bin\Release\ChatClient.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\bin\Release\ShareData.dll
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\bin\Release\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Release\ChatClient.csprojResolveAssemblyReference.cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Release\ChatClient.Form1.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Release\ChatClient.Properties.Resources.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Release\ChatClient.csproj.GenerateResource.Cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Release\ChatClient.exe
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Release\ChatClient.pdb

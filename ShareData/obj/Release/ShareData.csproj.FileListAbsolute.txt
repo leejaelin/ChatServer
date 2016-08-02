@@ -2,3 +2,7 @@ c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\bi
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\bin\Release\ShareData.pdb
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Release\ShareData.dll
 c:\users\leejaelin\documents\visual studio 2015\Projects\ChatServer\ShareData\obj\Release\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\bin\Release\ShareData.dll
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\bin\Release\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\obj\Release\ShareData.dll
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\obj\Release\ShareData.pdb

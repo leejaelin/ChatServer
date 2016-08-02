@@ -14,7 +14,8 @@ namespace ChatClient
 
         private void button1_Click(object sender, EventArgs e)
         {
-            launcher = new Launcher(Launcher.E_MODE.STANDALONE, 1);
+            launcher = new Launcher();
+            launcher.Init(Launcher.E_MODE.BOT, 1000);
             launcher.Start();
         }
 

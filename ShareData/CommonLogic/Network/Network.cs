@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
 using System.Collections.Generic;
 using ShareData.Message;
+using System.Collections.Concurrent;
 
 namespace ShareData.CommonLogic.Network
 {
@@ -49,7 +50,7 @@ namespace ShareData.CommonLogic.Network
             m_receiveHandle = new AsyncCallback(receiveProc);
 
             // server only
-            userSocketList = new Dictionary<uint, Socket>();
+            userSocketList = new ConcurrentDictionary<uint, Socket>();
             socketIdx = 0;
 
             // client only
@@ -90,7 +91,7 @@ namespace ShareData.CommonLogic.Network
         public virtual void Alive() { }
 
         // server only variable
-        private Dictionary<uint, Socket> userSocketList; // 서버에서 가지는 유저 소켓 리스트
+        private ConcurrentDictionary<uint, Socket> userSocketList; // 서버에서 가지는 유저 소켓 리스트
         public uint socketIdx; // 서버에서 가지는 소켓의 개수
 
         // Client only variable
@@ -101,16 +102,19 @@ namespace ShareData.CommonLogic.Network
         }
         #endregion
 
-        // (client) 동기 서버 접속을 시작 하는 함수
-        public void TryConnect()
-        {
-        }
         // (client) 비동기 서버 접속을 시작 하는 함수
         public void BeginConnect()
         {
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            //**socket.BeginConnect(IP, PORT, m_connectHandle, socket);
-            socket.BeginConnect(IP, PORT, m_connectHandle, new AsyncObject(socket));
+            try 
+            {
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //**socket.BeginConnect(IP, PORT, m_connectHandle, socket);
+                socket.BeginConnect(IP, PORT, m_connectHandle, new AsyncObject(socket));
+            }
+            catch(Exception /*e*/)
+            {
+                return;
+            }
         }
         
         #region AsyncCallback
@@ -129,7 +133,7 @@ namespace ShareData.CommonLogic.Network
             try
             {
                 IPEndPoint ipep = (IPEndPoint)serverSocket.RemoteEndPoint; // 서버 정보
-                Debug.WriteLine("서버 접속 성공 IP:" + ipep.Address + " Port:" + ipep.Port);
+                //Debug.WriteLine("서버 접속 성공 IP:" + ipep.Address + " Port:" + ipep.Port);
                 serverSocket.EndConnect(ar);
                 socket = serverSocket;
 
@@ -151,7 +155,7 @@ namespace ShareData.CommonLogic.Network
             try
             {
                 client = socket.EndAccept(ar);
-                Console.WriteLine("유저 접속 : " + client.RemoteEndPoint.ToString());
+                //Console.WriteLine("유저 접속 : " + client.RemoteEndPoint.ToString());
             }
             catch(SocketException e)
             {
@@ -160,7 +164,7 @@ namespace ShareData.CommonLogic.Network
             }
 
             uint userSocketIdx = socketIdx++;
-            userSocketList.Add(userSocketIdx, client);
+            userSocketList.TryAdd(userSocketIdx++, client);
 
             JobQueue.TryPushBack(new Message.Message(userSocketIdx, MessageType.M_USER_IN_OUT, new object(), client));
 
@@ -180,7 +184,7 @@ namespace ShareData.CommonLogic.Network
             AsyncObject clientObj = (AsyncObject)ar.AsyncState;
             Socket clientSocket = clientObj.Socket;
 
-            userSocketList.Remove(clientObj.Idx);
+            userSocketList.TryRemove(clientObj.Idx, out clientSocket);
             JobQueue.TryPushBack(new Message.Message(clientObj.Idx, MessageType.M_USER_IN_OUT, null, clientSocket));
 
             clientSocket.Shutdown(SocketShutdown.Both);
@@ -242,6 +246,9 @@ namespace ShareData.CommonLogic.Network
                     // Message Queue insert
                     JobQueue.TryPushBack(msg);
 
+                    // jobQueue를 위한 스레드를 살린다
+                    Alive();
+
                     // Clear Buffer
                     Array.Clear(ReceiveBuffer, 0, ReceiveBuffer.Length);
 
@@ -281,8 +288,11 @@ namespace ShareData.CommonLogic.Network
         protected void sendPacket(Packet packet)
         {
             // 클라이언트는 서버와 단일 연결 되어 있으므로 바로 보낸다.
-            if (!socket.Connected)
+            if (socket == null || !socket.Connected)
+            {
+                socket = null;
                 return;
+            }
 
             send(this.socket, packet);
         }
@@ -291,11 +301,15 @@ namespace ShareData.CommonLogic.Network
         protected void sendPacket(uint destSocketIdx, Packet packet)
         {
             // 서버는 목적지 클라이언트의 소켓을 찾아 전송 한다.
-            if ( !userSocketList.ContainsKey(destSocketIdx) )
-                return;
+            try 
+            {
+                Socket destSocket = userSocketList[destSocketIdx];
+                send(destSocket, packet);
+            }
+            catch(Exception /*e*/)
+            {
 
-            Socket destSocket = userSocketList[destSocketIdx];
-            send(destSocket, packet);
+            }            
         }
 
         private bool send(Socket socket, Packet packet)
@@ -309,6 +323,10 @@ namespace ShareData.CommonLogic.Network
                 socket.BeginSend(SendBuffer, 0, SendBuffer.Length, SocketFlags.None, m_sendHandle, new AsyncObject(socket));
             }
             catch (SocketException /*e*/)
+            {
+                return false;
+            }
+            catch( Exception /*e*/ )
             {
                 return false;
             }
@@ -347,13 +365,13 @@ namespace ShareData.CommonLogic.Network
         public void UserDisconnect(AsyncObject asyncObj)
         {
             Socket socket = asyncObj.Socket;
-            if (socket.Connected)
+            if (socket != null && socket.Connected)
             {
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close(0);
                 socket.Dispose();
             }
-            userSocketList.Remove(asyncObj.Idx);
+            userSocketList.TryRemove(asyncObj.Idx, out socket);
             JobQueue.TryPushBack(new Message.Message(asyncObj.Idx, MessageType.M_USER_IN_OUT, null, socket));
             socket = null;          
         }

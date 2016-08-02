@@ -46,6 +46,8 @@ namespace ChatServer.Process
 
         private void PacketDispatcher(User user, Packet packet)
         {
+            if (!packetHandlerList.ContainsKey(packet.GetPacketIndex()))
+                return;
             packetHandlerList[packet.GetPacketIndex()](user, packet);
         }
 
@@ -54,8 +56,11 @@ namespace ChatServer.Process
 
         private bool TESTPACKET(User user, Packet packet)
         {
+            if (null == user)
+                return false;
+
             TestPacket req = (TestPacket)packet;
-            Console.WriteLine(req.testString);
+            //Console.WriteLine(req.testString);
             
             SA_LOGIN ack = new SA_LOGIN();
             ack.result = 0;
@@ -67,7 +72,7 @@ namespace ChatServer.Process
         private bool CQ_LOGIN(User user, Packet packet)
         {
             CQ_LOGIN req = (CQ_LOGIN)packet;
-            Console.WriteLine( "ID : " + req.id);
+            //Console.WriteLine( "ID : " + req.id);
 
             user.State = LoginedState.Instance;
 

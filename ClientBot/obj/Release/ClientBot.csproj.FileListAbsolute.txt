@@ -16,3 +16,4 @@ C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\ob
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Release\ClientBot.csproj.GenerateResource.Cache
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Release\ClientBot.exe
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Release\ClientBot.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ClientBot\obj\Release\ClientBot.csprojResolveAssemblyReference.cache

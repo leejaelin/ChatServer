@@ -30,6 +30,8 @@ namespace ChatServer.Process
         public void MsgProcess(Message message)
         {
             Packet packet = (Packet)message.GetValue();
+            if (packet == null)
+                return;
             PacketHandler.Instance.PacketHandlerList[packet.GetPacketIndex()](packet);
         }
     }

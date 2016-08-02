@@ -31,6 +31,8 @@ namespace ChatServer.Data.User
 
         public void Insert( User user )
         {
+            if (userContainer.ContainsKey(user.Index))
+                userContainer.Remove(user.Index);
             userContainer.Add(user.Index, user);
         }
         public User Find( uint idx )

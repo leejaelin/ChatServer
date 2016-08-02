@@ -9,12 +9,12 @@ namespace Client
     {
         public Client( int idx ) : base()
         {
-            m_idx = 0;
+            m_idx = idx;
         }
 
         // member variables
         private int m_idx;
-           
+   
         public int GetIdx() { return m_idx; }
 
         public void SendPacket(Packet packet)
@@ -22,12 +22,12 @@ namespace Client
             sendPacket(packet);
         }
 
-        public void Do( Launcher l )
+        public bool Do( Launcher l )
         {
             if(socket == null)
             {
                 BeginConnect(); // 연결이 안되어 있으면 연결 시작
-                return;
+                return true;
             }
 
             //if(socket.Connected) // 소켓이 연결 되어 있을때
@@ -39,15 +39,25 @@ namespace Client
             //}
 
             int loopCount = JobQueue.GetTryGetQueueCount();
+            if (loopCount == 0)
+            {
+                return false;
+            } 
+
             for (int idx = 0; idx < loopCount; ++idx )
             {
                 Message message = JobQueue.TryPopFront();
                 if (message == null)
-                    break;
+                    return false;
 
                 PacketProcess.Instance.MsgProcess(message);
             }
-            
+            return true;
+        }
+
+        public override void Alive()
+        {
+            Launcher.Instance.ReleaseJobLoop();
         }
     };
 }
