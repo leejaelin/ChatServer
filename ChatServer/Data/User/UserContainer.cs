@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ChatServer.Lib.Singleton;
 using User = ChatServer.Data.User.User;
+using System.Collections.Concurrent;
 
 namespace ChatServer.Data.User
 {
@@ -25,27 +26,33 @@ namespace ChatServer.Data.User
 
         public UserContainer()
         {
-            userContainer = new Dictionary<uint, User>();
-            userContainer.Clear();
+            conUserContainer = new ConcurrentDictionary<uint, User>();
+            conUserContainer.Clear();
         }
 
         public void Insert( User user )
         {
-            if (userContainer.ContainsKey(user.Index))
-                userContainer.Remove(user.Index);
-            userContainer.Add(user.Index, user);
+            if (conUserContainer.ContainsKey(user.Index))
+            {
+                User tmpUser;
+                conUserContainer.TryRemove(user.Index, out tmpUser);
+            }
+            conUserContainer.TryAdd(user.Index, user);
         }
         public User Find( uint idx )
         {
             User user;
-            userContainer.TryGetValue(idx, out user);
+
+            conUserContainer.TryGetValue(idx, out user);
             return user != null ? user : null;
+
         }
         public void Pop( uint idx )
         {
+            User user;
             try
             {
-                userContainer.Remove(idx);
+                conUserContainer.TryRemove(idx, out user);
             }
             catch(Exception /*e*/)
             {
@@ -53,6 +60,6 @@ namespace ChatServer.Data.User
             }
         }
 
-        private Dictionary<uint, User> userContainer;
+        private ConcurrentDictionary<uint, User> conUserContainer;
     }
 }

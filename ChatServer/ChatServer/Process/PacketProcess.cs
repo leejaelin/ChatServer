@@ -39,9 +39,9 @@ namespace ChatServer.Process
 
         public void MsgProcess(User user, Message message)
         {
-            Packet pck = (Packet)message.GetValue();
-            
-            PacketDispatcher(user, pck);
+            Packet packet = (Packet)message.GetValue();
+
+            PacketDispatcher(user, packet);
         }
 
         private void PacketDispatcher(User user, Packet packet)

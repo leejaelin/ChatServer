@@ -33,8 +33,8 @@ namespace ChatServer
 
         // member variable
         private Dictionary<MessageType, IProcess> processList;
-        private Thread mainThread;
         private AutoResetEvent mainThreadEventHandler;
+
         private void init()
         {
             processList.Add(MessageType.M_PACKET, PacketProcess.Instance);
@@ -44,20 +44,15 @@ namespace ChatServer
 
         public void JobLoop()
         {
-            mainThread = Thread.CurrentThread;
             while(true)
             {
                 Message message = JobQueue.TryPopFront();
                 if (message == null)
                 {
-                    //Thread.Sleep(Timeout.Infinite)
-                    //mainThread.Suspend();
                     mainThreadEventHandler.WaitOne();
                     continue;
                 }
-
                 MessageProc(message);
-                
             }
         }
 
@@ -74,9 +69,7 @@ namespace ChatServer
 
         public override void Alive()
         {
-            //if (mainThread.ThreadState == ThreadState.Suspended)
-                //                mainThread.Resume();
-                mainThreadEventHandler.Set();
+            mainThreadEventHandler.Set();
         }
     }
 }

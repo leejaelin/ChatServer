@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShareData.CommonLogic.JobQueue;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -184,7 +185,7 @@ namespace Client
             {
                 var client = clients[i];
                 ShareData.TestPacket noti = new ShareData.TestPacket();
-                noti.testString = "Hello I'm " + i + "th bot!!!";
+                noti.testString = "안녕.Hello I'm " + i + "th bot!!!";
                 client.SendPacket(noti);
             }
         }

@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using ShareData.Message;
 using System.Collections.Concurrent;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace ShareData.CommonLogic.Network
 {
@@ -16,22 +18,41 @@ namespace ShareData.CommonLogic.Network
         {
             this.idx = idx;
             this.socket = socket;
+            this.networkBuffer = new Buffer((int)Network.BUFFER_SIZE);
         }
         ~AsyncObject() { }
 
         private uint idx; // 서버에서 필요 하다. conn, receive시 유저 구분을 위한 용도
         public uint Idx { get { return idx; } }
+        public Buffer networkBuffer { get; set; }
+        
         private Socket socket;
         public Socket Socket { get { return socket; } }
+    }
+
+    public class Buffer
+    {
+        public Buffer(int buffSize)
+        {
+            SendBuffer = new byte[buffSize];
+            RecvBuffer = new byte[buffSize];
+        }
+        ~Buffer()
+        {
+            SendBuffer = null;
+            RecvBuffer = null;
+        }
+        public byte[] SendBuffer { get; set; }
+        public byte[] RecvBuffer { get; set; }
     }
 
     public class Network
     {
         //System.Diagnostics.Trace trace; //로그 남기는 객체
         #region const variable
-        const string IP = "10.61.201.17";
-        const int PORT = 12345;
-        const int BUFFER_SIZE = 4096;
+        public static string IP = "10.61.201.17";
+        public static int PORT = 12345; 
+        public static int BUFFER_SIZE = 4096;
         #endregion
 
         #region Constructor / Destructor
@@ -39,8 +60,7 @@ namespace ShareData.CommonLogic.Network
         public Network()
         {
             socket = null;
-            SendBuffer = new byte[BUFFER_SIZE];
-            ReceiveBuffer = new byte[BUFFER_SIZE];
+            //NetworkBuffer = new Buffer((int)BUFFER_SIZE);
             JobQueue = new JobQueue.JobQueue();
 
             m_connectHandle = new AsyncCallback(connProc);
@@ -50,7 +70,7 @@ namespace ShareData.CommonLogic.Network
             m_receiveHandle = new AsyncCallback(receiveProc);
 
             // server only
-            userSocketList = new ConcurrentDictionary<uint, Socket>();
+            userSocketList = new ConcurrentDictionary<uint, AsyncObject>();
             socketIdx = 0;
 
             // client only
@@ -60,8 +80,8 @@ namespace ShareData.CommonLogic.Network
         ~Network()
         {
             socket = null;
-            SendBuffer = null;
-            ReceiveBuffer = null;
+            //ReceiveBuffer = null;
+            //NetworkBuffer = null;
             JobQueue = null;
 
             m_connectHandle = null;
@@ -84,14 +104,14 @@ namespace ShareData.CommonLogic.Network
         private AsyncCallback m_receiveHandle;
 
         public Socket socket { get; set; }
-        public byte[] SendBuffer { get; set; }
-        public byte[] ReceiveBuffer { get; set; }
+        //byte[] ReceiveBuffer { get; set; }
+        //public Buffer NetworkBuffer { get; set; }
         public JobQueue.JobQueue JobQueue { get; set; }
 
         public virtual void Alive() { }
 
         // server only variable
-        private ConcurrentDictionary<uint, Socket> userSocketList; // 서버에서 가지는 유저 소켓 리스트
+        private ConcurrentDictionary<uint, AsyncObject> userSocketList; // 서버에서 가지는 유저 소켓 리스트
         public uint socketIdx; // 서버에서 가지는 소켓의 개수
 
         // Client only variable
@@ -108,11 +128,11 @@ namespace ShareData.CommonLogic.Network
             try 
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                //**socket.BeginConnect(IP, PORT, m_connectHandle, socket);
+
                 socket.BeginConnect(IP, PORT, m_connectHandle, new AsyncObject(socket));
             }
-            catch(Exception /*e*/)
-            {
+            catch(SocketException /*e*/)
+            { 
                 return;
             }
         }
@@ -122,8 +142,8 @@ namespace ShareData.CommonLogic.Network
         // (client) 비동기로 서버에 접속할때 호출될 콜백 함수
         public void connProc(IAsyncResult ar)
         {
-            //**Socket serverSocket = (Socket)ar.AsyncState;
             AsyncObject serverObject = (AsyncObject)ar.AsyncState;
+            Buffer serverBuffer = serverObject.networkBuffer;
             Socket serverSocket = serverObject.Socket;
             if (!serverSocket.Connected)
             {
@@ -133,12 +153,12 @@ namespace ShareData.CommonLogic.Network
             try
             {
                 IPEndPoint ipep = (IPEndPoint)serverSocket.RemoteEndPoint; // 서버 정보
-                //Debug.WriteLine("서버 접속 성공 IP:" + ipep.Address + " Port:" + ipep.Port);
+                Debug.WriteLine("서버 접속 성공 IP:" + ipep.Address + " Port:" + ipep.Port);
                 serverSocket.EndConnect(ar);
                 socket = serverSocket;
 
                 // Begin Receive
-                serverSocket.BeginReceive(ReceiveBuffer, 0, ReceiveBuffer.Length, SocketFlags.None, m_receiveHandle, serverObject); //**
+                serverSocket.BeginReceive(serverBuffer.RecvBuffer, 0, serverBuffer.RecvBuffer.Length, SocketFlags.None, m_receiveHandle, serverObject); 
                 m_connected = true;
             }
             catch( SocketException /*e*/ ) // 연결중에 서버가 다운되거나 해서 소켓이 끊어지는 케이스
@@ -164,7 +184,8 @@ namespace ShareData.CommonLogic.Network
             }
 
             uint userSocketIdx = socketIdx++;
-            userSocketList.TryAdd(userSocketIdx++, client);
+            //userSocketList.TryAdd(userSocketIdx, client);
+            userSocketList.TryAdd(userSocketIdx, new AsyncObject(client, userSocketIdx) );
 
             JobQueue.TryPushBack(new Message.Message(userSocketIdx, MessageType.M_USER_IN_OUT, new object(), client));
 
@@ -172,30 +193,49 @@ namespace ShareData.CommonLogic.Network
 
             // Begin Accept
             socket.BeginAccept(m_acceptHandle, null);
-                        
-            // Begin Receive
-            client.BeginReceive(ReceiveBuffer, 0, ReceiveBuffer.Length, SocketFlags.None, m_receiveHandle, new AsyncObject(client, userSocketIdx)); //**
+
+            try 
+            {
+                // Begin Receive
+                AsyncObject newClientAsyncObject = new AsyncObject(client, userSocketIdx);
+                Buffer clientBuffer = newClientAsyncObject.networkBuffer;
+                client.BeginReceive(clientBuffer.RecvBuffer, 0, clientBuffer.RecvBuffer.Length, SocketFlags.None, m_receiveHandle, newClientAsyncObject);
+            }
+            catch( SocketException /*e*/)
+            {
+            }
         }
 
         // (server) 유저가 서버 연결 종료시 호출될 콜백함수
         private void disconnectProc(IAsyncResult ar)
         {
-            //**Socket clientSocket = (Socket)ar.AsyncState;
             AsyncObject clientObj = (AsyncObject)ar.AsyncState;
-            Socket clientSocket = clientObj.Socket;
+            AsyncObject deletedClient;
 
-            userSocketList.TryRemove(clientObj.Idx, out clientSocket);
-            JobQueue.TryPushBack(new Message.Message(clientObj.Idx, MessageType.M_USER_IN_OUT, null, clientSocket));
+            //userSocketList.TryRemove(clientObj.Idx, out clientSocket);
+            //JobQueue.TryPushBack(new Message.Message(clientObj.Idx, MessageType.M_USER_IN_OUT, null, clientSocket));
+            //disconnectSocket(clientSocket);
 
-            clientSocket.Shutdown(SocketShutdown.Both);
-            clientSocket.Close();
-            clientSocket.Dispose();
+            userSocketList.TryRemove(clientObj.Idx, out deletedClient);
+            JobQueue.TryPushBack(new Message.Message(deletedClient.Idx, MessageType.M_USER_IN_OUT, null, deletedClient.Socket));
+            disconnectSocket(deletedClient.Socket);
         }
 
+        private void disconnectSocket( Socket TargetSocket )
+        {
+            try
+            {
+                TargetSocket.Shutdown(SocketShutdown.Both);
+                TargetSocket.Close();
+                TargetSocket.Dispose();
+            }
+            catch (SocketException e)
+            {
+            }
+        }
         // (client/server) 비동기로 송신할때 호출될 콜백 함수
         public void sendProc(IAsyncResult ar)
         {
-            //**Socket sendSocket = (Socket)ar.AsyncState;
             AsyncObject sendObj = (AsyncObject)ar.AsyncState;
             Socket sendSocket = sendObj.Socket;
 
@@ -208,9 +248,12 @@ namespace ShareData.CommonLogic.Network
                 // 메시지 전송;
                 sendBytes = sendSocket.EndSend(ar);
             }
-            catch (Exception e)
+            catch(SocketException e)
             {
-                Console.WriteLine("EndSend ERROR!!" + e.Message);
+                return;
+            }
+            catch (ObjectDisposedException /*e*/)
+            {
                 return;
             }
 
@@ -223,65 +266,80 @@ namespace ShareData.CommonLogic.Network
         // (client/server) 비동기로 수신할때 호출될 콜백 함수
         public void receiveProc(IAsyncResult ar)
         {
-            //**Socket receiveSocket = (Socket)ar.AsyncState;
-            AsyncObject receiveObj = (AsyncObject)ar.AsyncState;
-            Socket receiveSocket = receiveObj.Socket;
-
-            if (!receiveSocket.Connected)
-                return;
-
+            AsyncObject receiveObj = null;// = (AsyncObject)ar.AsyncState;
+            Socket receiveSocket = null;// = receiveObj.Socket;
+            Buffer receiveBuffer = null;
             try
             {
+                receiveObj = (AsyncObject)ar.AsyncState;
+                receiveSocket = receiveObj.Socket;
+                receiveBuffer = receiveObj.networkBuffer;
+
+                if (!receiveSocket.Connected)
+                    return;
+
                 int recvBytes = receiveSocket.EndReceive(ar);
                 if (recvBytes > 0)
                 {
                     // receive Buffer Deserialize
-                    MemoryStream stream = new MemoryStream(ReceiveBuffer);
+                    MemoryStream stream = new MemoryStream(receiveBuffer.RecvBuffer);
                     BinaryFormatter binaryFormatter = new BinaryFormatter();
-                    Object obj = binaryFormatter.Deserialize(stream);
+                    Object obj = (Object)binaryFormatter.Deserialize(stream);
 
-                    // Message Create
-                    Message.Message msg = new Message.Message(receiveObj.Idx, Message.MessageType.M_PACKET, obj, receiveSocket);
+                    Packet packet = (Packet)obj;
+                    if( packet.length <= recvBytes )
+                    {
+                        // Message Create
+                        Message.Message msg = new Message.Message(receiveObj.Idx, Message.MessageType.M_PACKET, obj, receiveSocket);
 
-                    // Message Queue insert
-                    JobQueue.TryPushBack(msg);
+                        // Message Queue insert
+                        JobQueue.TryPushBack(msg);
 
-                    // jobQueue를 위한 스레드를 살린다
-                    Alive();
+                        // jobQueue를 위한 스레드를 살린다
+                        Alive();
 
-                    // Clear Buffer
-                    Array.Clear(ReceiveBuffer, 0, ReceiveBuffer.Length);
+                        // Clear Buffer
+                        Array.Clear(receiveBuffer.RecvBuffer, 0, receiveBuffer.RecvBuffer.Length);
+                    }
 
                     // Begin Receive
-                    receiveSocket.BeginReceive(ReceiveBuffer, 0, ReceiveBuffer.Length, SocketFlags.None, m_receiveHandle, receiveObj); //**
-
-                    return;
+                    //receiveSocket.BeginReceive(ReceiveBuffer, 0, ReceiveBuffer.Length, SocketFlags.None, m_receiveHandle, receiveObj);
                 }
                 else
                 {
                 }
             }
-            catch (ObjectDisposedException /*e*/)
+            catch (ObjectDisposedException e)
             {
+                Debug.WriteLine(e.Message);
             }
-            catch (Exception /*e*/)
+            catch(SerializationException e)
             {
+                Debug.WriteLine(e.Message);
             }
-            UserDisconnect(receiveObj);
+            catch(SocketException e)
+            {
+                // 유저가 연결을 종료했다.(그냥 끊어 버림)
+                UserDisconnect(receiveObj);
+                return;
+            }
+
+            receiveSocket.BeginReceive(receiveBuffer.RecvBuffer, 0, receiveBuffer.RecvBuffer.Length, SocketFlags.None, m_receiveHandle, receiveObj);
         }
         #endregion
 
         // (client->server) 일방적으로 연결 종료 처리
         public void Close()
         {
-            if(socket.Connected)
-            {
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close(0);
-                socket.Dispose();
-            }
-            socket = null;
-            m_connected = false;
+            //disconnectSocket(socket);
+            //if(socket.Connected)
+            //{
+            //    socket.Shutdown(SocketShutdown.Both);
+            //    socket.Close(0);
+            //    socket.Dispose();
+            //}
+            //socket = null;
+            //m_connected = false;
         }
 
         // (client->server)
@@ -300,16 +358,52 @@ namespace ShareData.CommonLogic.Network
         // (server->client)
         protected void sendPacket(uint destSocketIdx, Packet packet)
         {
+
             // 서버는 목적지 클라이언트의 소켓을 찾아 전송 한다.
             try 
             {
-                Socket destSocket = userSocketList[destSocketIdx];
-                send(destSocket, packet);
+                if (!userSocketList.ContainsKey(destSocketIdx))
+                    return;
+                //Socket destSocket = userSocketList[destSocketIdx];
+                //send(destSocket, packet);
+                AsyncObject destClientObj = userSocketList[destSocketIdx];
+                send(destClientObj, packet);
             }
             catch(Exception /*e*/)
             {
 
             }            
+        }
+
+        private bool send(AsyncObject asyncObject, Packet packet)
+        {
+            Socket sendSocket = asyncObject.Socket;
+            Buffer sendBuffer = asyncObject.networkBuffer;
+            try
+            {
+                MemoryStream mStream = new MemoryStream();
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(mStream, packet);
+                sendBuffer.SendBuffer = mStream.ToArray();
+                sendSocket.BeginSend(sendBuffer.SendBuffer, 0, sendBuffer.SendBuffer.Length, SocketFlags.None, m_sendHandle, new AsyncObject(sendSocket));
+            }
+            catch (SerializationException e)
+            {
+                return false;
+            }
+            catch (SocketException /*e*/)
+            {
+                return false;
+            }
+            catch (ArgumentException e)
+            {
+                return false;
+            }
+            catch (Exception /*e*/ )
+            {
+                return false;
+            }
+            return true;
         }
 
         private bool send(Socket socket, Packet packet)
@@ -319,10 +413,21 @@ namespace ShareData.CommonLogic.Network
                 MemoryStream mStream = new MemoryStream();
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 binaryFormatter.Serialize(mStream, packet);
-                SendBuffer = mStream.ToArray();
-                socket.BeginSend(SendBuffer, 0, SendBuffer.Length, SocketFlags.None, m_sendHandle, new AsyncObject(socket));
+
+                AsyncObject sendAsyncObject = new AsyncObject(socket);
+                Buffer NetworkBuffer = sendAsyncObject.networkBuffer;
+                NetworkBuffer.SendBuffer = mStream.ToArray();
+                socket.BeginSend(NetworkBuffer.SendBuffer, 0, NetworkBuffer.SendBuffer.Length, SocketFlags.None, m_sendHandle, sendAsyncObject);
+            }
+            catch(SerializationException e)
+            {
+                return false;
             }
             catch (SocketException /*e*/)
+            {
+                return false;
+            }
+            catch(ArgumentException e)
             {
                 return false;
             }
@@ -362,19 +467,37 @@ namespace ShareData.CommonLogic.Network
             socket.BeginAccept(m_acceptHandle, null);
         }
 
+        // (client -> server) 연결 강제 종료
         public void UserDisconnect(AsyncObject asyncObj)
         {
-            Socket socket = asyncObj.Socket;
-            if (socket != null && socket.Connected)
+            Socket targetSocket = asyncObj.Socket;
+            try
             {
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close(0);
-                socket.Dispose();
+                disconnectSocket(targetSocket);
+                //if (targetSocket != null && targetSocket.Connected)
+                //{
+                //    targetSocket.Shutdown(SocketShutdown.Both);
+                //    targetSocket.Close(0);
+                //    targetSocket.Dispose();
+                //}
             }
-            userSocketList.TryRemove(asyncObj.Idx, out socket);
-            JobQueue.TryPushBack(new Message.Message(asyncObj.Idx, MessageType.M_USER_IN_OUT, null, socket));
-            socket = null;          
+            catch(SocketException e)
+            {
+            }
+            catch(Exception /*e*/)
+            {
+
+            }
+            finally
+            {
+                AsyncObject tmpAsyncObject;
+                //userSocketList.TryRemove(asyncObj.Idx, out targetSocket);
+                userSocketList.TryRemove(asyncObj.Idx, out tmpAsyncObject);
+                JobQueue.TryPushBack(new Message.Message(asyncObj.Idx, MessageType.M_USER_IN_OUT, null, targetSocket));
+                Alive();
+            }
         }
+        public virtual void OnClose() { }
         #endregion
     }
 }

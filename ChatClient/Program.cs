@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Client;
+using System;
 using System.Windows.Forms;
 
 namespace ChatClient
@@ -14,6 +12,8 @@ namespace ChatClient
         [STAThread]
         static void Main()
         {
+            Launcher.Instance.Init(Launcher.E_MODE.BOT, 1000);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
