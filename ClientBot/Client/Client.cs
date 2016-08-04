@@ -27,14 +27,6 @@ namespace ClientBot.Client
                 BeginConnect(); // 연결이 안되어 있으면 연결 시작
                 return;
             }
-
-            if(socket.Connected) // 소켓이 연결 되어 있을때
-            {
-                if(GetConnectedToServer()) // 소켓연결+서버연결 완료 되었다면
-                {
-                    Close();
-                }
-            }
         }
     };
 }

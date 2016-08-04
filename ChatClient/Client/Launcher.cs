@@ -1,8 +1,7 @@
-﻿using ShareData.CommonLogic.JobQueue;
+﻿using ShareData;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Client
 {
@@ -33,19 +32,20 @@ namespace Client
             get { return m_mode; }
             set { m_mode = value; }
         }
-        private Dictionary<int, Client> m_Clients; // 봇, 싱글 전부 다 쓰인다
         private Thread workerThread;
         private bool isWorkerThreadRunning;
+        private Dictionary<int, Client> m_Clients; // 봇, 싱글 전부 다 쓰인다
+        
         // Bot Mode
         private int m_clientCount;
 
         public Launcher()
         {
             m_mode = E_MODE.STANDALONE;
-            m_Clients = new Dictionary<int, Client>();
-            m_clientCount = 1;
             workerThread = new Thread(Jobloop);
             isWorkerThreadRunning = false;
+            m_Clients = new Dictionary<int, Client>();
+            m_clientCount = 1;
         }
 
         public void Init(E_MODE mode, int clientCount)
@@ -72,7 +72,7 @@ namespace Client
                     break;
             }
 
-            workerThread.Start();            
+            workerThread.Start();
         }
 
         public void Jobloop()
@@ -101,29 +101,17 @@ namespace Client
         private void startBot()
         {
             createClient();
+            botTimer();
         }
 
         private void createClient()
         {
             for (int i = 0; i < m_clientCount; ++i)
             {
-                try
-                {
-                    // Client 생성
-                    Client client = new Client(i);
-                    m_Clients.Add(i, client);
-                }
-                catch (Exception /*e*/)
-                {
-                }
-            }
-            System.Windows.Forms.Timer tm = new System.Windows.Forms.Timer();
-            tm.Interval = 1000;
-            tm.Tick += new System.EventHandler((sender, e) =>
-            {
-                SendPacket();
-            });
-            tm.Start();
+               // Client 생성
+               Client client = new Client(i);
+               m_Clients.Add(i, client);
+            }            
         }
 
         private void helloMessage()
@@ -141,6 +129,16 @@ namespace Client
             Console.WriteLine("******Bot Count {0}******", m_clientCount);
         }
 
+        private void botTimer()
+        {
+            System.Windows.Forms.Timer tm = new System.Windows.Forms.Timer();
+            tm.Interval = 2000;
+            tm.Tick += new System.EventHandler((sender, e) =>
+            {
+                SendPacket();
+            });
+            tm.Start();
+        }
         public bool Do()
         {
             var clients = m_Clients;
@@ -178,14 +176,22 @@ namespace Client
             //}
         }
 
+        public Client GetClient()
+        {
+            Client client = null;
+            if( m_mode == E_MODE.STANDALONE )
+                client = m_Clients[0];
+            return client;
+        }
+
         public void SendPacket()
         {
             var clients = m_Clients;
             for (int i = 0; i < clients.Count; ++i)
             {
                 var client = clients[i];
-                ShareData.TestPacket noti = new ShareData.TestPacket();
-                noti.testString = "안녕.Hello I'm " + i + "th bot!!!";
+                ShareData.CQ_CHAT noti = new ShareData.CQ_CHAT();
+                noti.MsgStr = "안녕.Hello I'm " + i + "th bot!!!";
                 client.SendPacket(noti);
             }
         }

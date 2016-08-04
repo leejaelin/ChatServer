@@ -9,13 +9,15 @@ namespace Client
     {
         public Client( int idx ) : base()
         {
-            m_idx = idx;
+            m_botIdx = idx;
+            m_userIdx = 0;
         }
 
         // member variables
-        private int m_idx;
+        private int m_botIdx; // 클라이언트 봇 번호
+        private uint m_userIdx; // 서버에서 전달 받은 유저 인덱스
    
-        public int GetIdx() { return m_idx; }
+        public int GetIdx() { return m_botIdx; }
 
         public void SendPacket(Packet packet)
         {
@@ -29,14 +31,6 @@ namespace Client
                 BeginConnect(); // 연결이 안되어 있으면 연결 시작
                 return true;
             }
-
-            //if(socket.Connected) // 소켓이 연결 되어 있을때
-            //{
-            //    if(GetConnectedToServer()) // 소켓연결+서버연결 완료 되었다면
-            //    {
-            //        Close();
-            //    }
-            //}
 
             int loopCount = JobQueue.GetTryGetQueueCount();
             if (loopCount == 0)
@@ -53,6 +47,27 @@ namespace Client
                 PacketProcess.Instance.MsgProcess(message);
             }
             return true;
+        }
+
+        public override void OnLogin()
+        {
+            CQ_LOGIN req = new CQ_LOGIN();
+            req.id = "User"+m_botIdx;
+            req.pw = "1234";
+            SendPacket(req);
+
+            //if (Launcher.Instance.Mode == Launcher.E_MODE.BOT)
+            //{
+            //    System.Windows.Forms.Timer tm = new System.Windows.Forms.Timer();
+            //    tm.Interval = 2000;
+            //    tm.Tick += new System.EventHandler((sender, e) =>
+            //    {
+            //        TestPacket botNoti = new TestPacket();
+            //        botNoti.testString = "안녕.Hello I'm " + m_botIdx + "th bot!!!";
+            //        SendPacket(botNoti);
+            //    });
+            //    tm.Start();
+            //}
         }
 
         public override void Alive()

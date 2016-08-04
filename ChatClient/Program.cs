@@ -12,11 +12,10 @@ namespace ChatClient
         [STAThread]
         static void Main()
         {
-            Launcher.Instance.Init(Launcher.E_MODE.BOT, 1000);
-
+            Launcher.Instance.Init(Launcher.E_MODE.STANDALONE, 1);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(Form1.Instance);
         }
     }
 }

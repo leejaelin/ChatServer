@@ -62,6 +62,12 @@ namespace ChatServer
             processList[message.GetMessageType()].MsgProcess(user, message);
         }
 
+        public void Broadcast(Packet packet) 
+        { 
+            foreach( var user in UserContainer.Instance.ConUserContainer.Values )
+                user.DoSend(packet);
+        }
+
         public void SendPacket( uint destIdx, Packet packet )
         {
             sendPacket(destIdx, packet);

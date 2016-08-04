@@ -35,6 +35,7 @@ namespace ChatServer.Process
             // (int)Enum값을 키로 사용하는 패킷 핸들러들을 등록 한다.
             packetHandlerList.Add((int)PACKET_INDEX.TESTPACKET, TESTPACKET);
             packetHandlerList.Add((int)PACKET_INDEX.CQ_LOGIN, CQ_LOGIN );
+            packetHandlerList.Add((int)PACKET_INDEX.CQ_CHAT, CQ_CHAT);
         }
 
         public void MsgProcess(User user, Message message)
@@ -51,6 +52,10 @@ namespace ChatServer.Process
             packetHandlerList[packet.GetPacketIndex()](user, packet);
         }
 
+        private void broadCast(Packet packet)
+        {
+            ChatServer.Instance.Broadcast(packet);
+        }
         /// ////////////////////////////////////////////////////////////////////////////////////
         /// ////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,13 +77,27 @@ namespace ChatServer.Process
         private bool CQ_LOGIN(User user, Packet packet)
         {
             CQ_LOGIN req = (CQ_LOGIN)packet;
-            //Console.WriteLine( "ID : " + req.id);
 
             user.State = LoginedState.Instance;
+            user.NickName = req.id;
 
             SA_LOGIN ack = new SA_LOGIN();
-            ack.result = 0;
+            ack.result = SA_LOGIN.E_RESULT.SUCCESS;
+            ack.userIndex = user.Index;
+
             user.DoSend(ack);
+            return true;
+        }
+
+        private bool CQ_CHAT(User user, Packet packet)
+        {
+            CQ_CHAT req = (CQ_CHAT)packet;
+
+            SN_CHAT ack = new SN_CHAT();
+            ack.SenderIdx = user.Index;
+            ack.MsgStr = req.MsgStr;
+            broadCast(ack);
+
             return true;
         }
     }

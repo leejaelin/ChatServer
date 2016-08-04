@@ -30,6 +30,13 @@ namespace ChatServer.Data.User
             set { clientSocket = value; }
         }
 
+        private string nickName;
+        public string NickName
+        {
+            get { return nickName; }
+            set { nickName = value; }
+        }
+
         private IUserState state;
         public IUserState State
         {

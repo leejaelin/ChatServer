@@ -61,5 +61,9 @@ namespace ChatServer.Data.User
         }
 
         private ConcurrentDictionary<uint, User> conUserContainer;
+        public ConcurrentDictionary<uint, User> ConUserContainer
+        {
+            get { return conUserContainer; }
+        }
     }
 }

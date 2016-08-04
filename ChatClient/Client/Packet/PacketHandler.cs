@@ -22,7 +22,7 @@ namespace ChatClient.Client.Packet
         public PacketHandler()
         {
             packetHandlerList = new Dictionary<int, Func<ShareData.Packet, bool>>();
-            inIt();
+            init();
         }
         ~PacketHandler() { packetHandlerList = null; }
         private Dictionary<int, Func<ShareData.Packet, bool>> packetHandlerList;
@@ -30,16 +30,25 @@ namespace ChatClient.Client.Packet
         {
             get{return this.packetHandlerList;}
         }
-
-            
         
-        private void inIt()
+        public void init()
         {
             packetHandlerList.Add((int)PACKET_INDEX.SA_LOGIN, SA_LOGIN);
+            packetHandlerList.Add((int)PACKET_INDEX.SN_CHAT, SN_CHAT);
         }
 
-        private bool SA_LOGIN(ShareData.Packet packet)
+        public bool SA_LOGIN(ShareData.Packet packet)
         {
+            SA_LOGIN pck = (SA_LOGIN)packet;
+            return true;
+        }
+
+        public bool SN_CHAT(ShareData.Packet packet)
+        {
+            SN_CHAT noti = (SN_CHAT)packet;
+            //Form1.Instance.GetTextMain().Text.Insert(Form1.Instance.GetTextMain().Text.Length, noti.MsgStr);
+            Form1.Instance.RefreshTextBox(noti.MsgStr);
+
             return true;
         }
     }

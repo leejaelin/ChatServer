@@ -24,7 +24,6 @@ namespace ChatServer.Process
         
         public PacketProcess()
         {
-
         }
 
         public void MsgProcess(Message message)
