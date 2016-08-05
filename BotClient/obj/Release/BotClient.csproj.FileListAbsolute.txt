@@ -1,0 +1,11 @@
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\bin\Release\BotClient.exe.config
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\bin\Release\BotClient.exe
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\bin\Release\BotClient.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\bin\Release\ShareData.dll
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\bin\Release\ShareData.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\obj\Release\BotClient.csprojResolveAssemblyReference.cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\obj\Release\BotClient.Form1.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\obj\Release\BotClient.Properties.Resources.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\obj\Release\BotClient.csproj.GenerateResource.Cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\obj\Release\BotClient.exe
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\BotClient\obj\Release\BotClient.pdb

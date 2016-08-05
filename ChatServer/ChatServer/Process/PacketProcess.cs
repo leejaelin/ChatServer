@@ -36,6 +36,7 @@ namespace ChatServer.Process
             packetHandlerList.Add((int)PACKET_INDEX.TESTPACKET, TESTPACKET);
             packetHandlerList.Add((int)PACKET_INDEX.CQ_LOGIN, CQ_LOGIN );
             packetHandlerList.Add((int)PACKET_INDEX.CQ_CHAT, CQ_CHAT);
+            packetHandlerList.Add((int)PACKET_INDEX.CQ_CHANGENICKNAME, CQ_CHANGENICKNAME);
         }
 
         public void MsgProcess(User user, Message message)
@@ -91,12 +92,32 @@ namespace ChatServer.Process
 
         private bool CQ_CHAT(User user, Packet packet)
         {
-            CQ_CHAT req = (CQ_CHAT)packet;
+            if (null == user)
+                return false;
 
+            CQ_CHAT req = (CQ_CHAT)packet;
+            
             SN_CHAT ack = new SN_CHAT();
             ack.SenderIdx = user.Index;
+            ack.SenderNickname = user.NickName;
             ack.MsgStr = req.MsgStr;
             broadCast(ack);
+
+            return true;
+        }
+
+        private bool CQ_CHANGENICKNAME(User user, Packet packet) 
+        {
+            if( user == null )
+                return false;
+
+            CQ_CHANGENICKNAME req = (CQ_CHANGENICKNAME)packet;
+            user.NickName = req.nickname;
+            
+            SA_CHANGENICKNAME ack = new SA_CHANGENICKNAME();
+            ack.nickname = req.nickname;
+            ack.result = SA_CHANGENICKNAME.E_RESULT.SUCCESS;
+            user.DoSend(ack);
 
             return true;
         }

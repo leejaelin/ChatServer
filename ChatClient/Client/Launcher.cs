@@ -20,188 +20,84 @@ namespace Client
         }
         #endregion
 
-        public enum E_MODE
-        {
-            STANDALONE = 0,
-            BOT = 1,
-        };
-
-        private E_MODE m_mode;
-        public E_MODE Mode
-        {
-            get { return m_mode; }
-            set { m_mode = value; }
-        }
         private Thread workerThread;
-        private bool isWorkerThreadRunning;
-        private Dictionary<int, Client> m_Clients; // 봇, 싱글 전부 다 쓰인다
-        
-        // Bot Mode
-        private int m_clientCount;
-
+        private bool isWorkerThread;
+        private AutoResetEvent m_MainThreadEventHandler;
+        private Client client;
         public Launcher()
         {
-            m_mode = E_MODE.STANDALONE;
             workerThread = new Thread(Jobloop);
-            isWorkerThreadRunning = false;
-            m_Clients = new Dictionary<int, Client>();
-            m_clientCount = 1;
-        }
-
-        public void Init(E_MODE mode, int clientCount)
-        {
-            if (mode == E_MODE.STANDALONE)
-                return;
-
-            // 봇 모드 일때에만 설정
-            m_mode = mode;
-            m_clientCount = clientCount;
+            isWorkerThread = true;
+            m_MainThreadEventHandler = new AutoResetEvent(true);
+            client = null;
         }
 
         // member methods
         public void Start()
-        {   
-            helloMessage();
-            switch (m_mode)
-            {
-                case E_MODE.STANDALONE:
-                    startStandAlone();
-                    break;
-                case E_MODE.BOT:
-                    startBot();
-                    break;
-            }
+        {
+            if (workerThread.ThreadState != ThreadState.Unstarted)
+                return;
 
+            helloMessage();
+            startStandAlone();
             workerThread.Start();
         }
 
         public void Jobloop()
         {
-            if (isWorkerThreadRunning)
-                return;
             do 
             {
                 if (!Do())
                 {
-                    Thread.Sleep(100);
+                    m_MainThreadEventHandler.WaitOne();
                 }
             }
-            while(true);
+            while(isWorkerThread);
         }
-
-        private void startStandAlone()
-        {
-            createClient();
-            if (m_Clients[0] != null)
-            {
-                m_Clients[0].BeginConnect(); // 연결이 안되어 있으면 연결 시작
-                return;
-            }
-        }
-        private void startBot()
-        {
-            createClient();
-            botTimer();
-        }
-
-        private void createClient()
-        {
-            for (int i = 0; i < m_clientCount; ++i)
-            {
-               // Client 생성
-               Client client = new Client(i);
-               m_Clients.Add(i, client);
-            }            
-        }
-
-        private void helloMessage()
-        {
-            Console.WriteLine("******Client Start******");
-            switch (m_mode)
-            {
-                case E_MODE.BOT:
-                    Console.WriteLine("******Bot MODE******");
-                    break;
-                case E_MODE.STANDALONE:
-                    Console.WriteLine("******StandAlone MODE******");
-                    break;
-            }
-            Console.WriteLine("******Bot Count {0}******", m_clientCount);
-        }
-
-        private void botTimer()
-        {
-            System.Windows.Forms.Timer tm = new System.Windows.Forms.Timer();
-            tm.Interval = 2000;
-            tm.Tick += new System.EventHandler((sender, e) =>
-            {
-                SendPacket();
-            });
-            tm.Start();
-        }
+        
         public bool Do()
         {
-            var clients = m_Clients;
-            bool isRet = false;
-
-            //Parallel.For(0, clients.Count, (idx) =>
-            //{
-            //    var client = clients[idx];
-            //    isRet &= client.Do(this);
-            //});
-
-            for (int i = 0; i < clients.Count; ++i)
-            {
-                var client = clients[i];
-                isRet &= client.Do(this);
-            }
-
-            return isRet;
-
-            //if (clients.Count > 1000000)
-            //{
-            //    Parallel.For(0, clients.Count, (idx) =>
-            //    {
-            //        var client = clients[idx];
-            //        client.Do(this);
-            //    });
-            //}
-            //else
-            //{
-            //    for (int i = 0; i < clients.Count; ++i)
-            //    {
-            //        var client = clients[i];
-            //        client.Do(this);
-            //    }
-            //}
+            return client.Do();
         }
 
         public Client GetClient()
         {
-            Client client = null;
-            if( m_mode == E_MODE.STANDALONE )
-                client = m_Clients[0];
             return client;
         }
 
         public void SendPacket()
         {
-            var clients = m_Clients;
-            for (int i = 0; i < clients.Count; ++i)
-            {
-                var client = clients[i];
-                ShareData.CQ_CHAT noti = new ShareData.CQ_CHAT();
-                noti.MsgStr = "안녕.Hello I'm " + i + "th bot!!!";
-                client.SendPacket(noti);
-            }
-        }
-        public void ClientsClear()
-        {
-            m_Clients.Clear();
+            ShareData.CQ_CHAT noti = new ShareData.CQ_CHAT();
+            noti.MsgStr = "안녕? Hello Server!!";
+            client.SendPacket(noti);
         }
 
         public void ReleaseJobLoop()
         {
+            m_MainThreadEventHandler.Set();
+        }
+
+        public void TerminateProcess()
+        {
+            isWorkerThread = false;
+            ReleaseJobLoop();
+        }
+
+        private void startStandAlone()
+        {
+            createClient();
+        }
+
+        private void createClient()
+        {
+            // Client 생성
+            client = new Client();
+        }
+
+        private void helloMessage()
+        {
+            Console.WriteLine("******Client Start******");
+            Console.WriteLine("******StandAlone MODE******");
         }
     }
 }

@@ -20,3 +20,4 @@ C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\o
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.csproj.GenerateResource.Cache
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.exe
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.Form2.resources

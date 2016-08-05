@@ -92,7 +92,8 @@ namespace ChatClient
 
         private void button3_Click(object sender, EventArgs e)
         {
-
+            Form2 nicknameChange = new Form2();
+            nicknameChange.ShowDialog();
         }
     }
 }

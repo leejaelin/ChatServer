@@ -73,7 +73,7 @@ namespace ChatServer
             sendPacket(destIdx, packet);
         }
 
-        public override void Alive()
+        public override void AwakeThread()
         {
             mainThreadEventHandler.Set();
         }

@@ -106,7 +106,7 @@ namespace ShareData.CommonLogic.Network
         public Socket socket { get; set; }
         public JobQueue.JobQueue JobQueue { get; set; }
 
-        public virtual void Alive() { }
+        public virtual void AwakeThread() { }
 
         // server only variable
         private ConcurrentDictionary<uint, AsyncObject> userSocketList; // 서버에서 가지는 유저 소켓 리스트
@@ -151,6 +151,7 @@ namespace ShareData.CommonLogic.Network
                 socket = serverSocket;
 
                 OnLogin();
+                AwakeThread();
 
                 // Begin Receive
                 serverSocket.BeginReceive(serverBuffer.RecvBuffer, 0, serverBuffer.RecvBuffer.Length, SocketFlags.None, m_receiveHandle, serverObject); 
@@ -183,7 +184,7 @@ namespace ShareData.CommonLogic.Network
 
             JobQueue.TryPushBack(new Message.Message(userSocketIdx, MessageType.M_USER_IN_OUT, new object(), client));
 
-            Alive();
+            AwakeThread();
 
             // Begin Accept
             socket.BeginAccept(m_acceptHandle, null);
@@ -286,7 +287,7 @@ namespace ShareData.CommonLogic.Network
                         JobQueue.TryPushBack(msg);
 
                         // jobQueue를 위한 스레드를 살린다
-                        Alive();
+                        AwakeThread();
 
                         // Clear Buffer
                         Array.Clear(receiveBuffer.RecvBuffer, 0, receiveBuffer.RecvBuffer.Length);
@@ -468,7 +469,7 @@ namespace ShareData.CommonLogic.Network
                 AsyncObject tmpAsyncObject;
                 userSocketList.TryRemove(asyncObj.Idx, out tmpAsyncObject);
                 JobQueue.TryPushBack(new Message.Message(asyncObj.Idx, MessageType.M_USER_IN_OUT, null, targetSocket));
-                Alive();
+                AwakeThread();
             }
         }
 

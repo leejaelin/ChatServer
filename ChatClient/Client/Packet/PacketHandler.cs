@@ -1,4 +1,5 @@
-﻿using ShareData;
+﻿using Client;
+using ShareData;
 using System;
 using System.Collections.Generic;
 
@@ -35,20 +36,31 @@ namespace ChatClient.Client.Packet
         {
             packetHandlerList.Add((int)PACKET_INDEX.SA_LOGIN, SA_LOGIN);
             packetHandlerList.Add((int)PACKET_INDEX.SN_CHAT, SN_CHAT);
+            packetHandlerList.Add((int)PACKET_INDEX.SA_CHANGENICKNAME, SA_CHANGENICKNAME);
         }
 
         public bool SA_LOGIN(ShareData.Packet packet)
         {
-            SA_LOGIN pck = (SA_LOGIN)packet;
+            SA_LOGIN ack = (SA_LOGIN)packet;
             return true;
         }
 
         public bool SN_CHAT(ShareData.Packet packet)
         {
-            SN_CHAT noti = (SN_CHAT)packet;
-            //Form1.Instance.GetTextMain().Text.Insert(Form1.Instance.GetTextMain().Text.Length, noti.MsgStr);
-            Form1.Instance.RefreshTextBox(noti.MsgStr);
+            SN_CHAT ack = (SN_CHAT)packet;
+            
+            Form1.Instance.RefreshTextBox("[ "+ack.SenderNickname+" ] " + ack.MsgStr);
 
+            return true;
+        }
+
+        public bool SA_CHANGENICKNAME(ShareData.Packet packet)
+        {
+            SA_CHANGENICKNAME ack = (SA_CHANGENICKNAME)packet;
+            if (ack.result == ShareData.SA_CHANGENICKNAME.E_RESULT.FAIL)
+                return false;
+
+            Launcher.Instance.GetClient().Nickname = ack.nickname;
             return true;
         }
     }

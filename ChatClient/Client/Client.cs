@@ -7,24 +7,22 @@ namespace Client
 {
     class Client : Network
     {
-        public Client( int idx ) : base()
+        public Client() : base()
         {
-            m_botIdx = idx;
             m_userIdx = 0;
         }
 
         // member variables
-        private int m_botIdx; // 클라이언트 봇 번호
         private uint m_userIdx; // 서버에서 전달 받은 유저 인덱스
-   
-        public int GetIdx() { return m_botIdx; }
+        private string m_nickname; // 유저 닉네임
+        public string Nickname { get { return m_nickname; } set{m_nickname = value;} }
 
         public void SendPacket(Packet packet)
         {
             sendPacket(packet);
         }
 
-        public bool Do( Launcher l )
+        public bool Do()
         {
             if(socket == null)
             {
@@ -52,25 +50,12 @@ namespace Client
         public override void OnLogin()
         {
             CQ_LOGIN req = new CQ_LOGIN();
-            req.id = "User"+m_botIdx;
+            req.id = "User";
             req.pw = "1234";
             SendPacket(req);
-
-            //if (Launcher.Instance.Mode == Launcher.E_MODE.BOT)
-            //{
-            //    System.Windows.Forms.Timer tm = new System.Windows.Forms.Timer();
-            //    tm.Interval = 2000;
-            //    tm.Tick += new System.EventHandler((sender, e) =>
-            //    {
-            //        TestPacket botNoti = new TestPacket();
-            //        botNoti.testString = "안녕.Hello I'm " + m_botIdx + "th bot!!!";
-            //        SendPacket(botNoti);
-            //    });
-            //    tm.Start();
-            //}
         }
 
-        public override void Alive()
+        public override void AwakeThread()
         {
             Launcher.Instance.ReleaseJobLoop();
         }

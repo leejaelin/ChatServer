@@ -19,6 +19,7 @@ namespace ShareData
         CQ_LOGIN,
         SA_LOGIN,
         CQ_CHANGENICKNAME,
+        SA_CHANGENICKNAME,
 
         CQ_CHAT = PACKET_CATEGORY.CHAT, // 10000 ~
         SN_CHAT,
@@ -94,20 +95,32 @@ namespace ShareData
     [Serializable]
     public class CQ_CHANGENICKNAME : Packet
     {
+        public CQ_CHANGENICKNAME()
+            : base(PACKET_INDEX.CQ_CHANGENICKNAME)
+        {
+        }
+
+        public string nickname; // 요청 닉네임
+    }
+
+    [Serializable]
+    public class SA_CHANGENICKNAME : Packet
+    {
         public enum E_RESULT
         {
             FAIL = -1,
             SUCCESS = 0,
         }
 
-        public CQ_CHANGENICKNAME()
-            : base(PACKET_INDEX.CQ_CHANGENICKNAME)
+        public SA_CHANGENICKNAME()
+            : base(PACKET_INDEX.SA_CHANGENICKNAME)
         {
         }
 
         public E_RESULT result; // 로그인 성공 여부.
-        public string nickname; // 닉네임(임시)
+        public string nickname; // 변경 닉네임
     }
+
 
     [Serializable]
     public class CQ_CHAT : Packet
@@ -130,6 +143,7 @@ namespace ShareData
         }
 
         public uint SenderIdx; // 메시지 보낸 유저 번호
+        public string SenderNickname; // 메시지 보낸 유저 닉네임(임시)
         public string MsgStr; // 전달 받은 채팅 메시지
     }
 }
