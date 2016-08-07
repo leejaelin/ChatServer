@@ -1,4 +1,5 @@
 ﻿using BotClient.BotClient.Process;
+using BotClient.BotClient.Room;
 using ShareData;
 using ShareData.Message;
 
@@ -13,6 +14,8 @@ namespace BotClient.BotClient
 
         private int m_botIdx;
         public int BotIdx { get { return m_botIdx; } set { m_botIdx = value; } }
+
+        public RoomContainer RoomList { get; set; }
 
         public void SendPacket( ShareData.Packet packet )
         {

@@ -49,6 +49,8 @@
     <Compile Include="BotClient\Packet\PacketHandler.cs" />
     <Compile Include="BotClient\Process\IProcess.cs" />
     <Compile Include="BotClient\Process\PacketProcess.cs" />
+    <Compile Include="BotClient\Room\Room.cs" />
+    <Compile Include="BotClient\Room\RoomContainer.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

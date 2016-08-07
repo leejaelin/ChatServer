@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace BotClient.BotClient
 {
@@ -37,11 +33,10 @@ namespace BotClient.BotClient
 
         public Launcher()
         {
-            WorkerThread = new Thread(JobLoop);
-            isWorkerThread = true;
             botClients = new Dictionary<int, BotClient>();
             MainThreadEventHandler = new AutoResetEvent(true);
         }
+
         public void Init( int botCount )
         {
             botClientMax = botCount;
@@ -56,12 +51,17 @@ namespace BotClient.BotClient
                     MainThreadEventHandler.WaitOne();
                 }
             } while (IsWorkerThread);
+
+            WorkerThread = null;
         }
 
         public void Start()
         {
-            createBot();
-            workerThread.Start();
+            if (WorkerThread != null)
+                return;
+
+            createBot();            
+            createThread();
             botTimer();
         }
 
@@ -74,6 +74,14 @@ namespace BotClient.BotClient
                 botClients.Add(i, botClient);
             }
         }
+
+        private void createThread()
+        {
+            IsWorkerThread = true;
+            WorkerThread = new Thread(JobLoop);
+            workerThread.Start();
+        }
+
         public bool Do()
         {
             bool isRet = true;
@@ -85,7 +93,7 @@ namespace BotClient.BotClient
             {
                 isRet &= botClients[idx].Do();
             }
-                return isRet;
+            return isRet;
         }
 
         public void SendPacket()
@@ -99,10 +107,20 @@ namespace BotClient.BotClient
             }
         }
 
+        public void BotClose()
+        {
+            for( int idx = 0; idx < botClients.Count; idx++ )
+            {
+                botClients[idx].socket.Close();
+            }
+            TerminateProcess();
+        }
+
         public void TerminateProcess()
         {
             IsWorkerThread = false;
             MainThreadEventHandler.Set();
+            botClients.Clear(); // 봇 리스트 정리
         }
         
         private void botTimer()

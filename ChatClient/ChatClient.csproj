@@ -52,6 +52,8 @@
     <Compile Include="Client\Packet\PacketHandler.cs" />
     <Compile Include="Client\Process\IProcess.cs" />
     <Compile Include="Client\Process\PacketProcess.cs" />
+    <Compile Include="Client\Room\Room.cs" />
+    <Compile Include="Client\Room\RoomContainer.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>
     </Compile>

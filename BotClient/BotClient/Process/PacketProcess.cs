@@ -1,5 +1,4 @@
 ﻿using BotClient.BotClient.Packet;
-using ShareData;
 using ShareData.Message;
 
 namespace BotClient.BotClient.Process

@@ -50,7 +50,7 @@ namespace ShareData.CommonLogic.Network
     {
         //System.Diagnostics.Trace trace; //로그 남기는 객체
         #region const variable
-        public static string IP = "10.61.201.17";
+        public static string IP = "127.0.0.1";
         public static int PORT = 12345; 
         public static int BUFFER_SIZE = 4096;
         #endregion
@@ -173,9 +173,9 @@ namespace ShareData.CommonLogic.Network
                 client = socket.EndAccept(ar);
                 Console.WriteLine("유저 접속 : " + client.RemoteEndPoint.ToString());
             }
-            catch(SocketException e)
+            catch(SocketException /*e*/)
             {
-                Console.WriteLine(e.ErrorCode + " " + e.Message);
+                //Console.WriteLine(e.ErrorCode + " " + e.Message);
                 return;
             }
 
@@ -220,7 +220,7 @@ namespace ShareData.CommonLogic.Network
                 TargetSocket.Close();
                 TargetSocket.Dispose();
             }
-            catch (SocketException e)
+            catch (SocketException /*e*/)
             {
             }
         }
@@ -239,7 +239,7 @@ namespace ShareData.CommonLogic.Network
                 // 메시지 전송;
                 sendBytes = sendSocket.EndSend(ar);
             }
-            catch(SocketException e)
+            catch(SocketException /*e*/)
             {
                 return;
             }
@@ -308,7 +308,7 @@ namespace ShareData.CommonLogic.Network
             {
                 Debug.WriteLine(e.Message);
             }
-            catch(SocketException e)
+            catch(SocketException /*e*/)
             {
                 // 유저가 연결을 종료했다.(그냥 끊어 버림)
                 UserDisconnect(receiveObj);
@@ -329,7 +329,7 @@ namespace ShareData.CommonLogic.Network
                 return;
             }
 
-            send(this.socket, packet);
+            send(socket, packet);
         }
 
         // (server->client)
@@ -364,7 +364,7 @@ namespace ShareData.CommonLogic.Network
                 sendBuffer.SendBuffer = mStream.ToArray();
                 sendSocket.BeginSend(sendBuffer.SendBuffer, 0, sendBuffer.SendBuffer.Length, SocketFlags.None, m_sendHandle, new AsyncObject(sendSocket));
             }
-            catch (SerializationException e)
+            catch (SerializationException /*e*/)
             {
                 return false;
             }
@@ -372,7 +372,7 @@ namespace ShareData.CommonLogic.Network
             {
                 return false;
             }
-            catch (ArgumentException e)
+            catch (ArgumentException /*e*/)
             {
                 return false;
             }
@@ -396,7 +396,7 @@ namespace ShareData.CommonLogic.Network
                 NetworkBuffer.SendBuffer = mStream.ToArray();
                 socket.BeginSend(NetworkBuffer.SendBuffer, 0, NetworkBuffer.SendBuffer.Length, SocketFlags.None, m_sendHandle, sendAsyncObject);
             }
-            catch(SerializationException e)
+            catch(SerializationException /*e*/)
             {
                 return false;
             }
@@ -404,7 +404,7 @@ namespace ShareData.CommonLogic.Network
             {
                 return false;
             }
-            catch(ArgumentException e)
+            catch(ArgumentException /*e*/)
             {
                 return false;
             }
@@ -424,9 +424,7 @@ namespace ShareData.CommonLogic.Network
         private void serverInit()
         {
             // Address, EndPoint
-            const int port = 12345;
-            IPAddress ipAddr = IPAddress.Parse(IP);
-            IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
+            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, Network.PORT);
 
             // Socket Create, Bind, Listen
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -435,10 +433,13 @@ namespace ShareData.CommonLogic.Network
                 socket.Bind(ipEndPoint);
                 socket.Listen(100);
             }
-            catch (SocketException /*e*/)
+            catch (SocketException e)
             {
                 return;
             }
+
+            Console.WriteLine("[ Listen ]");
+            Console.WriteLine("[ IP : {0}, PORT : {1} ]", ipEndPoint.Address.ToString(), ipEndPoint.Port);
 
             // Begin Accept
             socket.BeginAccept(m_acceptHandle, null);

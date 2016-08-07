@@ -24,6 +24,12 @@ namespace ChatServer.Data.User
         }
         #endregion
 
+        private ConcurrentDictionary<uint, User> conUserContainer;
+        public ConcurrentDictionary<uint, User> ConUserContainer
+        {
+            get { return conUserContainer; }
+        }
+
         public UserContainer()
         {
             conUserContainer = new ConcurrentDictionary<uint, User>();
@@ -39,6 +45,7 @@ namespace ChatServer.Data.User
             }
             conUserContainer.TryAdd(user.Index, user);
         }
+
         public User Find( uint idx )
         {
             User user;
@@ -47,23 +54,12 @@ namespace ChatServer.Data.User
             return user != null ? user : null;
 
         }
+
         public void Pop( uint idx )
         {
             User user;
-            try
-            {
+            if( conUserContainer.ContainsKey(idx) )
                 conUserContainer.TryRemove(idx, out user);
-            }
-            catch(Exception /*e*/)
-            {
-                return;
-            }
-        }
-
-        private ConcurrentDictionary<uint, User> conUserContainer;
-        public ConcurrentDictionary<uint, User> ConUserContainer
-        {
-            get { return conUserContainer; }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BotClient.BotClient;
+using System;
 using System.Windows.Forms;
 
 namespace BotClient
@@ -31,18 +32,24 @@ namespace BotClient
         public delegate void dgtSetTextBox(string s);
         public void RefreshTextBox(string s)
         {
-            if (TextReadChatMain.InvokeRequired)
+            try
             {
-                dgtSetTextBox stb = new dgtSetTextBox(RefreshTextBox);
-                this.Invoke(stb, new object[] { s });
+                if (TextReadChatMain.InvokeRequired)
+                {
+                    dgtSetTextBox stb = new dgtSetTextBox(RefreshTextBox);
+                    this.Invoke(stb, new object[] { s });
+                }
+                else
+                {
+                    if (TextReadChatMain.Text.Length != 0)
+                        TextReadChatMain.Text += "\n";
+                    TextReadChatMain.Text += s;
+                    TextReadChatMain.SelectionStart = TextReadChatMain.Text.Length;
+                    TextReadChatMain.ScrollToCaret();
+                }
             }
-            else
+            catch(Exception /*e*/)
             {
-                if (TextReadChatMain.Text.Length != 0)
-                    TextReadChatMain.Text += "\n";
-                TextReadChatMain.Text += s;
-                TextReadChatMain.SelectionStart = TextReadChatMain.Text.Length;
-                TextReadChatMain.ScrollToCaret();
             }
         }
 
@@ -50,6 +57,11 @@ namespace BotClient
         {
             Launcher.Instance.Init((int)numericUpDown1.Value);
             Launcher.Instance.Start();
+        }
+
+        private void button2_Click(object sender, System.EventArgs e)
+        {
+            Launcher.Instance.BotClose();
         }
     }
 }
