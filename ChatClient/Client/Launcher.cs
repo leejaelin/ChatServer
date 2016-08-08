@@ -26,7 +26,6 @@ namespace Client
         private Client client;
         public Launcher()
         {
-            workerThread = new Thread(Jobloop);
             isWorkerThread = true;
             m_MainThreadEventHandler = new AutoResetEvent(true);
             client = null;
@@ -35,14 +34,20 @@ namespace Client
         // member methods
         public void Start()
         {
-            if (workerThread.ThreadState != ThreadState.Unstarted)
+            if (null != workerThread)
                 return;
 
             helloMessage();
             startStandAlone();
-            workerThread.Start();
+            createThread();
         }
 
+        private void createThread()
+        {
+            isWorkerThread = true;
+            workerThread = new Thread(Jobloop);
+            workerThread.Start();
+        }
         public void Jobloop()
         {
             do 
@@ -53,6 +58,7 @@ namespace Client
                 }
             }
             while(isWorkerThread);
+            workerThread = null;
         }
         
         public bool Do()

@@ -1,4 +1,5 @@
 ﻿using ChatClient.Client.Packet;
+using Client;
 using Clinet.Process;
 using ShareData;
 using ShareData.Message;
@@ -28,10 +29,22 @@ namespace ChatServer.Process
 
         public void MsgProcess(Message message)
         {
-            Packet packet = (Packet)message.GetValue();
-            if (packet == null)
+            if ( message.GetMessageType() == MessageType.M_USER_IN_OUT )
+            {
+                serverDisconnected();
                 return;
+            }
+
+            Packet packet = (Packet)message.GetValue();
+           if (packet == null)
+                return;
+
             PacketHandler.Instance.PacketHandlerList[packet.GetPacketIndex()](packet);
+        }
+
+        private void serverDisconnected()
+        {
+            Launcher.Instance.TerminateProcess();
         }
     }
 }

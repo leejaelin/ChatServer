@@ -1,13 +1,14 @@
-﻿using BotClient.BotClient.Process;
-using BotClient.BotClient.Room;
-using ShareData;
+﻿using ShareData;
+using ShareData.CommonLogic.Network;
 using ShareData.Message;
+using BotClient.BotClient.Process;
+using BotClient.BotClient.Room;
 
 namespace BotClient.BotClient
 {
-    class BotClient : ShareData.CommonLogic.Network.Network
+    class BotClient : Network
     {
-        public BotClient( int idx ) : base()
+        public BotClient( int idx ) : base(Network.E_SOCKET_MODE.CLIENT)
         {
             m_botIdx = idx;
         }

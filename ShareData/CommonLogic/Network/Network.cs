@@ -56,12 +56,11 @@ namespace ShareData.CommonLogic.Network
         #endregion
 
         #region Constructor / Destructor
-        // constructor
-        public Network()
+        public Network( E_SOCKET_MODE mode ) // constructor
         {
             socket = null;
-            //NetworkBuffer = new Buffer((int)BUFFER_SIZE);
             JobQueue = new JobQueue.JobQueue();
+            socketMode = mode;
 
             m_connectHandle = new AsyncCallback(connProc);
             m_acceptHandle = new AsyncCallback(acceptProc);
@@ -72,12 +71,9 @@ namespace ShareData.CommonLogic.Network
             // server only
             userSocketList = new ConcurrentDictionary<uint, AsyncObject>();
             socketIdx = 0;
-
-            // client only
-            m_connected = false;
         }
-        // destructor
-        ~Network()
+
+        ~Network() // destructor
         {
             socket = null;
             //ReceiveBuffer = null;
@@ -106,18 +102,17 @@ namespace ShareData.CommonLogic.Network
         public Socket socket { get; set; }
         public JobQueue.JobQueue JobQueue { get; set; }
 
-        public virtual void AwakeThread() { }
+        public enum E_SOCKET_MODE
+        {
+            SERVER = 0,
+            CLIENT,
+        };
+        private E_SOCKET_MODE socketMode;
 
         // server only variable
         private ConcurrentDictionary<uint, AsyncObject> userSocketList; // 서버에서 가지는 유저 소켓 리스트
         public uint socketIdx; // 서버에서 가지는 소켓의 개수
 
-        // Client only variable
-        private bool m_connected; // socket의 connect를 비교하면 멀티스레드에서의 처리 순서때문에 문제가 발생하여, 따로 관리해준다.
-        public bool GetConnectedToServer()
-        {
-            return m_connected;
-        }
         #endregion
 
         // (client) 비동기 서버 접속을 시작 하는 함수
@@ -155,7 +150,6 @@ namespace ShareData.CommonLogic.Network
 
                 // Begin Receive
                 serverSocket.BeginReceive(serverBuffer.RecvBuffer, 0, serverBuffer.RecvBuffer.Length, SocketFlags.None, m_receiveHandle, serverObject); 
-                m_connected = true;
             }
             catch( SocketException /*e*/ ) // 연결중에 서버가 다운되거나 해서 소켓이 끊어지는 케이스
             {
@@ -167,11 +161,11 @@ namespace ShareData.CommonLogic.Network
         // (server) 유저가 서버 접근할때 호출될 콜백함수
         public void acceptProc(IAsyncResult ar)
         {
-            Socket client = null;
+            Socket clientSocket = null;
             try
             {
-                client = socket.EndAccept(ar);
-                Console.WriteLine("유저 접속 : " + client.RemoteEndPoint.ToString());
+                clientSocket = socket.EndAccept(ar);
+                Console.WriteLine("유저 접속 : " + clientSocket.RemoteEndPoint.ToString());
             }
             catch(SocketException /*e*/)
             {
@@ -180,9 +174,9 @@ namespace ShareData.CommonLogic.Network
             }
 
             uint userSocketIdx = socketIdx++;
-            userSocketList.TryAdd(userSocketIdx, new AsyncObject(client, userSocketIdx) );
+            userSocketList.TryAdd(userSocketIdx, new AsyncObject(clientSocket, userSocketIdx) );
 
-            JobQueue.TryPushBack(new Message.Message(userSocketIdx, MessageType.M_USER_IN_OUT, new object(), client));
+            JobQueue.TryPushBack(new Message.Message(userSocketIdx, MessageType.M_USER_IN_OUT, null, clientSocket));
 
             AwakeThread();
 
@@ -192,9 +186,9 @@ namespace ShareData.CommonLogic.Network
             try 
             {
                 // Begin Receive
-                AsyncObject newClientAsyncObject = new AsyncObject(client, userSocketIdx);
+                AsyncObject newClientAsyncObject = new AsyncObject(clientSocket, userSocketIdx);
                 Buffer clientBuffer = newClientAsyncObject.networkBuffer;
-                client.BeginReceive(clientBuffer.RecvBuffer, 0, clientBuffer.RecvBuffer.Length, SocketFlags.None, m_receiveHandle, newClientAsyncObject);
+                clientSocket.BeginReceive(clientBuffer.RecvBuffer, 0, clientBuffer.RecvBuffer.Length, SocketFlags.None, m_receiveHandle, newClientAsyncObject);
             }
             catch( SocketException /*e*/)
             {
@@ -205,11 +199,11 @@ namespace ShareData.CommonLogic.Network
         private void disconnectProc(IAsyncResult ar)
         {
             AsyncObject clientObj = (AsyncObject)ar.AsyncState;
-            AsyncObject deletedClient;
+            AsyncObject disconnectClient;
 
-            userSocketList.TryRemove(clientObj.Idx, out deletedClient);
-            JobQueue.TryPushBack(new Message.Message(deletedClient.Idx, MessageType.M_USER_IN_OUT, null, deletedClient.Socket));
-            disconnectSocket(deletedClient.Socket);
+            userSocketList.TryRemove(clientObj.Idx, out disconnectClient);
+            JobQueue.TryPushBack(new Message.Message(disconnectClient.Idx, MessageType.M_USER_IN_OUT, null, disconnectClient.Socket));
+            disconnectSocket(disconnectClient.Socket);
         }
 
         private void disconnectSocket( Socket TargetSocket )
@@ -310,7 +304,7 @@ namespace ShareData.CommonLogic.Network
             }
             catch(SocketException /*e*/)
             {
-                // 유저가 연결을 종료했다.(그냥 끊어 버림)
+                // 상대방이 연결을 종료했다.(그냥 끊어 버림)
                 UserDisconnect(receiveObj);
                 return;
             }
@@ -452,12 +446,6 @@ namespace ShareData.CommonLogic.Network
             try
             {
                 disconnectSocket(targetSocket);
-                //if (targetSocket != null && targetSocket.Connected)
-                //{
-                //    targetSocket.Shutdown(SocketShutdown.Both);
-                //    targetSocket.Close(0);
-                //    targetSocket.Dispose();
-                //}
             }
             catch(SocketException /*e*/)
             {
@@ -474,8 +462,9 @@ namespace ShareData.CommonLogic.Network
             }
         }
 
-        public virtual void OnLogin() { } //(client -> server 로그인 성공)
-        public virtual void OnClose() { } //(server에서 유저 로그아웃 처리)
+        public virtual void AwakeThread() { } // Job Thread 재개
+        public virtual void OnLogin() { } // (client -> server 로그인 성공)
+        public virtual void OnClose() { } // (server에서 유저 로그아웃 처리)
         #endregion
     }
 }

@@ -7,7 +7,7 @@ namespace Client
 {
     class Client : Network
     {
-        public Client() : base()
+        public Client() : base(Network.E_SOCKET_MODE.CLIENT)
         {
             m_userIdx = 0;
         }

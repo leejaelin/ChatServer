@@ -12,3 +12,4 @@ C:\Users\leejaelin\Documents\ChatServer\ShareData\bin\Debug\ShareData.pdb
 C:\Users\leejaelin\Documents\ChatServer\ShareData\obj\Debug\ShareData.dll
 C:\Users\leejaelin\Documents\ChatServer\ShareData\obj\Debug\ShareData.pdb
 C:\Users\leejaelin\Documents\ChatServer\ShareData\obj\Debug\ShareData.csprojResolveAssemblyReference.cache
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ShareData\obj\Debug\ShareData.csprojResolveAssemblyReference.cache

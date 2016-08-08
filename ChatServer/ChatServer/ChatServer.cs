@@ -23,7 +23,7 @@ namespace ChatServer
         }
         #endregion
 
-        public ChatServer()
+        public ChatServer() : base(Network.E_SOCKET_MODE.SERVER)
         {
             processList = new Dictionary<MessageType, IProcess>();
             mainThreadEventHandler = new AutoResetEvent(true);

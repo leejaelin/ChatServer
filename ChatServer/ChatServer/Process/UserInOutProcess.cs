@@ -23,7 +23,7 @@ namespace ChatServer.Process
 
         public void MsgProcess(User user, Message message)
         {
-            if( message.GetValue() != null ) // 유저가 서버에 접속 하였을때
+            if (null == user) // 유저가 서버에 접속 하였을때
             {
                 UserContainer.Instance.Insert(new User(message.GetCallerIdx(), message.GetSocket()));
             }
