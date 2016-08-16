@@ -42,6 +42,7 @@ namespace ChatClient.Client.Packet
         public bool SA_LOGIN(ShareData.Packet packet)
         {
             SA_LOGIN ack = (SA_LOGIN)packet;
+            Client.Scene.SceneManager.Instance.
             return true;
         }
 
@@ -49,7 +50,7 @@ namespace ChatClient.Client.Packet
         {
             SN_CHAT ack = (SN_CHAT)packet;
             
-            Form1.Instance.RefreshTextBox("[ "+ack.SenderNickname+" ] " + ack.MsgStr);
+            LobbyForm.Instance.RefreshTextBox("[ "+ack.SenderNickname+" ] " + ack.MsgStr);
 
             return true;
         }

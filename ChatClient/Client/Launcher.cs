@@ -38,8 +38,7 @@ namespace Client
                 return;
 
             helloMessage();
-            startStandAlone();
-            createThread();
+            startStandAlone();            
         }
 
         private void createThread()
@@ -48,6 +47,7 @@ namespace Client
             workerThread = new Thread(Jobloop);
             workerThread.Start();
         }
+
         public void Jobloop()
         {
             do 
@@ -92,6 +92,7 @@ namespace Client
         private void startStandAlone()
         {
             createClient();
+            createThread();
         }
 
         private void createClient()

@@ -14,8 +14,9 @@ namespace ChatClient
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(Form1.Instance);
-            Launcher.Instance.TerminateProcess();        
+            Client.Scene.SceneManager.Instance.RunLoginForm();
+            //Application.Run(LobbyForm.Instance);
+            //Launcher.Instance.TerminateProcess();        
         }
     }
 }
