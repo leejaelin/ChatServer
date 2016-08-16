@@ -1,6 +1,7 @@
-﻿using System;
+﻿using ShareData.Data.Room;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ShareData
@@ -22,7 +23,11 @@ namespace ShareData
         SA_CHANGENICKNAME,
 
         CQ_CHAT = PACKET_CATEGORY.CHAT, // 10000 ~
-        SN_CHAT,
+        SA_CHAT,
+
+        CQ_ENTERCHATROOM = PACKET_CATEGORY.ROOM, // 20000 ~
+        SA_ENTERCHATROOM,
+        SA_CHATROOMLIST,
 
         PACKET_INDEX_END,
     }
@@ -135,15 +140,57 @@ namespace ShareData
     }
 
     [Serializable]
-    public class SN_CHAT : Packet
+    public class SA_CHAT : Packet
     {
-        public SN_CHAT()
-            : base(PACKET_INDEX.SN_CHAT)
+        public SA_CHAT()
+            : base(PACKET_INDEX.SA_CHAT)
         {
         }
 
+        public int RoomIdx; // 메시지 보낸 방 번호
         public uint SenderIdx; // 메시지 보낸 유저 번호
         public string SenderNickname; // 메시지 보낸 유저 닉네임(임시)
         public string MsgStr; // 전달 받은 채팅 메시지
+    }
+
+    [Serializable]
+    public class CQ_ENTERCHATROOM : Packet
+    {
+        public CQ_ENTERCHATROOM()
+            : base(PACKET_INDEX.CQ_ENTERCHATROOM)
+        {
+        }
+
+        public int RoomIdx; // 요청 방 번호
+    }
+
+    [Serializable]
+    public class SA_ENTERCHATROOM : Packet
+    {
+        public SA_ENTERCHATROOM()
+            : base(PACKET_INDEX.SA_ENTERCHATROOM)
+        {
+            ChatRoomInfo = new ChatRoom();
+        }
+
+        public enum E_RESULT
+        {
+            FAIL = -1,
+            SUCCESS = 0,
+        }
+
+        public E_RESULT Result;  // 성공 여부
+        public ChatRoom ChatRoomInfo;   // 채팅방 정보
+    }
+
+    [Serializable]
+    public class SA_CHATROOMLIST : Packet
+    {
+        public SA_CHATROOMLIST()
+            : base(PACKET_INDEX.SA_CHATROOMLIST)
+        {
+        }
+
+        public Dictionary<int, ChatRoom> ChatRoomList;
     }
 }

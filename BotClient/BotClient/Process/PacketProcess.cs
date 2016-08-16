@@ -1,6 +1,5 @@
-﻿using BotClient.BotClient.Packet;
+﻿using BotClient.BotClient;
 using ShareData.Message;
-
 namespace BotClient.BotClient.Process
 {
     class PacketProcess
@@ -27,7 +26,8 @@ namespace BotClient.BotClient.Process
             ShareData.Packet packet = (ShareData.Packet)message.GetValue();
             if (packet == null)
                 return;
-            PacketHandler.Instance.PacketHandlerList[packet.GetPacketIndex()](packet);
+
+            PacketHandler.PacketHandler.Instance.PacketHandlerList[packet.GetPacketIndex()](packet);
         }
     }
 }

@@ -1,31 +1,31 @@
-﻿using System.Collections.Generic;
+﻿//using System.Collections.Generic;
 
-namespace BotClient.BotClient.Room
-{
-    class RoomUserInfo
-    {
-        private uint userIndex;
-        private string userNickname;
+//namespace BotClient.BotClient.Room
+//{
+//    class RoomUserInfo
+//    {
+//        private uint userIndex;
+//        private string userNickname;
         
-        RoomUserInfo( uint idx, string nickname)
-        {
-            userIndex = idx;
-            userNickname = nickname;
-        }
-    }
+//        RoomUserInfo( uint idx, string nickname)
+//        {
+//            userIndex = idx;
+//            userNickname = nickname;
+//        }
+//    }
 
-    class Room
-    {
-        public int Index { get; set; }// 방 번호
-        public string Title { get; set; } // 방 제목
+//    class Room
+//    {
+//        public int Index { get; set; }// 방 번호
+//        public string Title { get; set; } // 방 제목
 
-        public Dictionary<uint, RoomUserInfo> RoomUserList { get; set; }
+//        public Dictionary<uint, RoomUserInfo> RoomUserList { get; set; }
 
-        public Room()
-        {
-            Index = 0;
-            Title = null;
-            RoomUserList = new Dictionary<uint, RoomUserInfo>();
-        }
-    }
-}
+//        public Room()
+//        {
+//            Index = 0;
+//            Title = null;
+//            RoomUserList = new Dictionary<uint, RoomUserInfo>();
+//        }
+//    }
+//}

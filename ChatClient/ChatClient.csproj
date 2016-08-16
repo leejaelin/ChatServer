@@ -47,51 +47,54 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChatForm.cs">
+    <Compile Include="ChatRoomScene.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ChatForm.Designer.cs">
-      <DependentUpon>ChatForm.cs</DependentUpon>
+    <Compile Include="ChatRoomScene.Designer.cs">
+      <DependentUpon>ChatRoomScene.cs</DependentUpon>
     </Compile>
     <Compile Include="Client\Client.cs" />
     <Compile Include="Client\Launcher.cs" />
-    <Compile Include="Client\Packet\PacketHandler.cs" />
+    <Compile Include="Client\PacketHandler\PacketHandler.cs" />
     <Compile Include="Client\Process\IProcess.cs" />
     <Compile Include="Client\Process\PacketProcess.cs" />
     <Compile Include="Client\Room\Room.cs" />
     <Compile Include="Client\Room\RoomContainer.cs" />
-    <Compile Include="ChangeNicknameForm.cs">
+    <Compile Include="ChangeNicknameScene.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ChangeNicknameForm.Designer.cs">
-      <DependentUpon>ChangeNicknameForm.cs</DependentUpon>
+    <Compile Include="ChangeNicknameScene.Designer.cs">
+      <DependentUpon>ChangeNicknameScene.cs</DependentUpon>
     </Compile>
     <Compile Include="Client\Scene\SceneManager.cs" />
-    <Compile Include="LobbyForm.cs">
+    <Compile Include="Library\MyScene\MyScene.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LobbyForm.Designer.cs">
-      <DependentUpon>LobbyForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LoginForm.cs">
+    <Compile Include="LobbyScene.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LoginForm.Designer.cs">
-      <DependentUpon>LoginForm.cs</DependentUpon>
+    <Compile Include="LobbyScene.Designer.cs">
+      <DependentUpon>LobbyScene.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoginScene.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginScene.Designer.cs">
+      <DependentUpon>LoginScene.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ChatForm.resx">
-      <DependentUpon>ChatForm.cs</DependentUpon>
+    <EmbeddedResource Include="ChatRoomScene.resx">
+      <DependentUpon>ChatRoomScene.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LobbyForm.resx">
-      <DependentUpon>LobbyForm.cs</DependentUpon>
+    <EmbeddedResource Include="LobbyScene.resx">
+      <DependentUpon>LobbyScene.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ChangeNicknameForm.resx">
-      <DependentUpon>ChangeNicknameForm.cs</DependentUpon>
+    <EmbeddedResource Include="ChangeNicknameScene.resx">
+      <DependentUpon>ChangeNicknameScene.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LoginForm.resx">
-      <DependentUpon>LoginForm.cs</DependentUpon>
+    <EmbeddedResource Include="LoginScene.resx">
+      <DependentUpon>LoginScene.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

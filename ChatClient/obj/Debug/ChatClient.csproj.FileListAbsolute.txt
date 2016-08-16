@@ -20,7 +20,7 @@ C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.Properti
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.csproj.GenerateResource.Cache
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.exe
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.pdb
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.LobbyForm.resources
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.ChangeNicknameForm.resources
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.LoginForm.resources
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.ChatForm.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.LoginScene.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.LobbyScene.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.ChangeNicknameScene.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.ChatRoomScene.resources

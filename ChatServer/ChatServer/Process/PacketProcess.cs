@@ -37,6 +37,7 @@ namespace ChatServer.Process
             packetHandlerList.Add((int)PACKET_INDEX.CQ_LOGIN, CQ_LOGIN );
             packetHandlerList.Add((int)PACKET_INDEX.CQ_CHAT, CQ_CHAT);
             packetHandlerList.Add((int)PACKET_INDEX.CQ_CHANGENICKNAME, CQ_CHANGENICKNAME);
+            packetHandlerList.Add((int)PACKET_INDEX.CQ_ENTERCHATROOM, CQ_ENTERCHATROOM);
         }
 
         public void MsgProcess(User user, Message message)
@@ -97,7 +98,7 @@ namespace ChatServer.Process
 
             CQ_CHAT req = (CQ_CHAT)packet;
             
-            SN_CHAT ack = new SN_CHAT();
+            SA_CHAT ack = new SA_CHAT();
             ack.SenderIdx = user.Index;
             ack.SenderNickname = user.NickName;
             ack.MsgStr = req.MsgStr;
@@ -117,6 +118,21 @@ namespace ChatServer.Process
             SA_CHANGENICKNAME ack = new SA_CHANGENICKNAME();
             ack.nickname = req.nickname;
             ack.result = SA_CHANGENICKNAME.E_RESULT.SUCCESS;
+            user.DoSend(ack);
+
+            return true;
+        }
+
+        private bool CQ_ENTERCHATROOM(User user, Packet packet)
+        {
+            if (user == null)
+                return false;
+
+            CQ_ENTERCHATROOM req = (CQ_ENTERCHATROOM)packet;
+
+            SA_ENTERCHATROOM ack = new SA_ENTERCHATROOM();
+            ack.Result = SA_ENTERCHATROOM.E_RESULT.SUCCESS;
+            ack.ChatRoomInfo.Index = req.RoomIdx;
             user.DoSend(ack);
 
             return true;

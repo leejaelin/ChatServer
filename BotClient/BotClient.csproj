@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="BotClient\BotClient.cs" />
     <Compile Include="BotClient\Launcher.cs" />
-    <Compile Include="BotClient\Packet\PacketHandler.cs" />
+    <Compile Include="BotClient\PacketHandler\PacketHandler.cs" />
     <Compile Include="BotClient\Process\IProcess.cs" />
     <Compile Include="BotClient\Process\PacketProcess.cs" />
     <Compile Include="BotClient\Room\Room.cs" />

@@ -43,11 +43,13 @@
   <ItemGroup>
     <Compile Include="CommonLogic\JobQueue\JobQueue.cs" />
     <Compile Include="CommonLogic\Network\Network.cs" />
+    <Compile Include="Data\Room\Room.cs" />
     <Compile Include="Message\Message.cs" />
     <Compile Include="Packet\Packet.cs" />
     <Compile Include="TestPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

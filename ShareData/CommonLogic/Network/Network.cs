@@ -427,7 +427,7 @@ namespace ShareData.CommonLogic.Network
                 socket.Bind(ipEndPoint);
                 socket.Listen(100);
             }
-            catch (SocketException e)
+            catch (SocketException /*e*/)
             {
                 return;
             }

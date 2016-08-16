@@ -1,31 +1,32 @@
 ﻿using System.Collections.Generic;
+using ShareData.Data.Room;
 
 namespace BotClient.BotClient.Room
 {
     class RoomContainer
     {
-        public Dictionary<int, Room> ConRoomContainer { get; set; }
+        public Dictionary<int, ChatRoom> ConRoomContainer { get; set; }
 
         public RoomContainer()
         {
-            ConRoomContainer = new Dictionary<int, Room>();
+            ConRoomContainer = new Dictionary<int, ChatRoom>();
         }
 
-        public void Inser( Room room )
+        public void Insert(ChatRoom room)
         {
-            if( ConRoomContainer.ContainsKey( room.Index ) )
+            if (ConRoomContainer.ContainsKey(room.Index))
                 ConRoomContainer.Remove(room.Index);
             ConRoomContainer.Add(room.Index, room);
         }
 
-        public Room Find( int roomIdx )
+        public ChatRoom Find(int roomIdx)
         {
-            Room room;
+            ChatRoom room;
             ConRoomContainer.TryGetValue(roomIdx, out room);
-            return room != null? room : null;
+            return room != null ? room : null;
         }
 
-        public void Pop( int roomIdx )
+        public void Pop(int roomIdx)
         {
             if (ConRoomContainer.ContainsKey(roomIdx))
                 ConRoomContainer.Remove(roomIdx);
