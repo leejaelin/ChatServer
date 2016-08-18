@@ -33,10 +33,13 @@ namespace ChatServer.Data.User
         public UserContainer()
         {
             conUserContainer = new ConcurrentDictionary<uint, User>();
-            conUserContainer.Clear();
         }
-
-        public void Insert( User user )
+        ~UserContainer()
+        {
+            conUserContainer.Clear();
+            conUserContainer = null;
+        }
+        public bool Insert( User user )
         {
             if (conUserContainer.ContainsKey(user.Index))
             {
@@ -44,6 +47,7 @@ namespace ChatServer.Data.User
                 conUserContainer.TryRemove(user.Index, out tmpUser);
             }
             conUserContainer.TryAdd(user.Index, user);
+            return true;
         }
 
         public User Find( uint idx )

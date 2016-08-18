@@ -35,6 +35,7 @@ namespace ChatClient.Client.Scene
                 CurrentScene.OnEntry();
                 Application.Run(CurrentScene);
             }
+            removeChatScene(); // 열려 있던 채팅창 Close
         }
     
         public void ChangeScene( MyScene scene )
@@ -43,6 +44,14 @@ namespace ChatClient.Client.Scene
             CurrentScene = scene;
             isLoop = true;
             oldForm.CloseScene();
+        }
+
+        private void removeChatScene()
+        {
+            if ( CurrentScene.GetType() == typeof(LobbyScene) )
+            {
+                ((LobbyScene)CurrentScene).CloseAllChatScene();
+            }
         }
     }
 }

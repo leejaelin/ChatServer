@@ -1,5 +1,5 @@
 ﻿using ChatClient.Client.Scene;
-using Client;
+using ChatClient.Client;
 using System;
 using System.Windows.Forms;
 

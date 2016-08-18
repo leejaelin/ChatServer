@@ -18,16 +18,16 @@ namespace ShareData.Data.Room
     [Serializable]
     public class ChatRoom
     {
-        public int Index { get; set; }// 방 번호
-        public string Title { get; set; } // 방 제목
+        public int Index { get; set; }  // 방 번호
+        public String Title { get; set; }   // 방 제목
 
-        public Dictionary<uint, ChatRoom> RoomUserList { get; set; }
+        public Dictionary<uint, ChatRoomUserInfo> RoomUserList { get; set; }
 
         public ChatRoom()
         {
             Index = 0;
             Title = null;
-            RoomUserList = new Dictionary<uint, ChatRoom>();
+            RoomUserList = new Dictionary<uint, ChatRoomUserInfo>();
         }
     }
 }

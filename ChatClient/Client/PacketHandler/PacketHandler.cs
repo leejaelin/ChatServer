@@ -1,5 +1,5 @@
 ﻿using ChatClient.Client.Scene;
-using Client;
+using ChatClient.Client;
 using ShareData;
 using System;
 using System.Collections.Generic;
@@ -39,8 +39,9 @@ namespace ChatClient.Client.PacketHandler
             packetHandlerList.Add((int)PACKET_INDEX.SA_LOGIN, SA_LOGIN);
             packetHandlerList.Add((int)PACKET_INDEX.SA_CHAT, SA_CHAT);
             packetHandlerList.Add((int)PACKET_INDEX.SA_CHANGENICKNAME, SA_CHANGENICKNAME);
+            packetHandlerList.Add((int)PACKET_INDEX.SA_CREATECHATROOM, SA_CREATECHATROOM);
             packetHandlerList.Add((int)PACKET_INDEX.SA_ENTERCHATROOM, SA_ENTERCHATROOM);
-            packetHandlerList.Add((int)PACKET_INDEX.SA_CHATROOMLIST, SA_CHATROOMLIST);
+            packetHandlerList.Add((int)PACKET_INDEX.SN_CHATROOMLIST, SN_CHATROOMLIST);
         }
 
         public bool SA_LOGIN(ShareData.Packet packet)
@@ -54,9 +55,17 @@ namespace ChatClient.Client.PacketHandler
 
         public bool SA_CHAT(ShareData.Packet packet)
         {
+            SceneManager sceneManager = SceneManager.Instance;
+            if (sceneManager.CurrentScene.GetType() != typeof(LobbyScene)) // 현재 로비 Scene이 없으므로 실패
+                return false;
+
             SA_CHAT ack = (SA_CHAT)packet;
             
-            //LobbyScene.Instance.RefreshTextBox("[ "+ack.SenderNickname+" ] " + ack.MsgStr);
+            LobbyScene lobbyScene = (LobbyScene)sceneManager.CurrentScene;
+            if (!lobbyScene.ChatRoomSceneList.ContainsKey(ack.RoomIdx))
+                return false;
+
+            lobbyScene.ChatRoomSceneList[ack.RoomIdx].RecvChatMessage("[ "+ack.SenderNickname+" ] " + ack.MsgStr);
 
             return true;
         }
@@ -71,6 +80,20 @@ namespace ChatClient.Client.PacketHandler
             return true;
         }
 
+        public bool SA_CREATECHATROOM(Packet packet)
+        {
+            SceneManager sceneManager = SceneManager.Instance;
+            if (sceneManager.CurrentScene.GetType() != typeof(LobbyScene)) // 현재 로비 Scene이 없으므로 실패
+                return false;
+
+            SA_CREATECHATROOM ack = (SA_CREATECHATROOM)packet;
+            
+            LobbyScene lobbyScene = (LobbyScene)sceneManager.CurrentScene;
+            lobbyScene.AddChatRoom(ack.chatRoomInfo);
+
+            return true;
+        }
+
         public bool SA_ENTERCHATROOM(Packet packet)
         {
             SA_ENTERCHATROOM ack = (SA_ENTERCHATROOM)packet;
@@ -82,13 +105,21 @@ namespace ChatClient.Client.PacketHandler
                 return false;
 
             LobbyScene lobbyScene = (LobbyScene)currentForm;
-            lobbyScene.AddChatRoom(ack.ChatRoomInfo.Index);
+            lobbyScene.AddChatRoom(ack.ChatRoomInfo);
 
             return true;
         }
 
-        public bool SA_CHATROOMLIST(Packet packet)
+        public bool SN_CHATROOMLIST(Packet packet)
         {
+            SceneManager sceneManager = SceneManager.Instance;
+            if (sceneManager.CurrentScene.GetType() != typeof(LobbyScene)) // 현재 로비 Scene이 없으므로 실패
+                return false;
+
+            SN_CHATROOMLIST noti = (SN_CHATROOMLIST)packet;
+            
+            LobbyScene lobbyScene = (LobbyScene)sceneManager.CurrentScene;
+            lobbyScene.RefreshChatRoomList(noti.Type, noti.ChatRoomList);
             return true;
         }
     }

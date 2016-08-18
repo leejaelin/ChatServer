@@ -1,4 +1,5 @@
-﻿using ChatServer.Data.User;
+﻿using ChatServer.Data.Room;
+using ChatServer.Data.User;
 using ChatServer.Data.User.UserState;
 using ShareData;
 using ShareData.Message;
@@ -37,6 +38,7 @@ namespace ChatServer.Process
             packetHandlerList.Add((int)PACKET_INDEX.CQ_LOGIN, CQ_LOGIN );
             packetHandlerList.Add((int)PACKET_INDEX.CQ_CHAT, CQ_CHAT);
             packetHandlerList.Add((int)PACKET_INDEX.CQ_CHANGENICKNAME, CQ_CHANGENICKNAME);
+            packetHandlerList.Add((int)PACKET_INDEX.CQ_CREATECHATROOM, CQ_CREATECHATROOM);
             packetHandlerList.Add((int)PACKET_INDEX.CQ_ENTERCHATROOM, CQ_ENTERCHATROOM);
         }
 
@@ -102,6 +104,7 @@ namespace ChatServer.Process
             ack.SenderIdx = user.Index;
             ack.SenderNickname = user.NickName;
             ack.MsgStr = req.MsgStr;
+            ack.RoomIdx = req.RoomIdx;
             broadCast(ack);
 
             return true;
@@ -120,6 +123,34 @@ namespace ChatServer.Process
             ack.result = SA_CHANGENICKNAME.E_RESULT.SUCCESS;
             user.DoSend(ack);
 
+            return true;
+        }
+
+        private bool CQ_CREATECHATROOM(User user, Packet packet)
+        {
+            if (user == null)
+                return false;
+
+            CQ_CREATECHATROOM req = (CQ_CREATECHATROOM)packet;
+
+            RoomContainer roomContainer = RoomContainer.Instance;
+            bool ret = roomContainer.Insert(req.chatRoomInfo);
+
+            SA_CREATECHATROOM ack = new SA_CREATECHATROOM();
+            if (ret)
+            {
+                ack.Result = SA_CREATECHATROOM.E_RESULT.SUCCESS;
+                ack.chatRoomInfo = req.chatRoomInfo;
+            }
+            else
+                ack.Result = SA_CREATECHATROOM.E_RESULT.FAIL;
+
+            user.DoSend(ack);
+
+            SN_CHATROOMLIST noti = new SN_CHATROOMLIST();
+            noti.Type = SN_CHATROOMLIST.E_TYPE.ADD_LIST;
+            noti.ChatRoomList.Add(req.chatRoomInfo.Index, req.chatRoomInfo);
+            broadCast(noti);
             return true;
         }
 

@@ -1,5 +1,5 @@
 ﻿using ChatClient.Library.MyScene;
-using Client;
+using ChatClient.Client;
 using ShareData;
 using System;
 

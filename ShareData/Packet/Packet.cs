@@ -25,9 +25,12 @@ namespace ShareData
         CQ_CHAT = PACKET_CATEGORY.CHAT, // 10000 ~
         SA_CHAT,
 
-        CQ_ENTERCHATROOM = PACKET_CATEGORY.ROOM, // 20000 ~
+        CQ_CREATECHATROOM = PACKET_CATEGORY.ROOM, // 20000 ~
+        SA_CREATECHATROOM,
+        CQ_ENTERCHATROOM,
         SA_ENTERCHATROOM,
-        SA_CHATROOMLIST,
+        
+        SN_CHATROOMLIST,
 
         PACKET_INDEX_END,
     }
@@ -154,6 +157,37 @@ namespace ShareData
     }
 
     [Serializable]
+    public class CQ_CREATECHATROOM : Packet
+    {
+        public CQ_CREATECHATROOM()
+            : base(PACKET_INDEX.CQ_CREATECHATROOM)
+        {
+            chatRoomInfo = new ChatRoom();
+        }
+
+        public ChatRoom chatRoomInfo; // 생성 요청 방 정보
+    }
+
+    [Serializable]
+    public class SA_CREATECHATROOM : Packet
+    {
+        public SA_CREATECHATROOM()
+            : base(PACKET_INDEX.SA_CREATECHATROOM)
+        {
+            chatRoomInfo = new ChatRoom();
+        }
+
+        public enum E_RESULT
+        {
+            FAIL = -1,
+            SUCCESS = 0,
+        }
+
+        public E_RESULT Result;
+        public ChatRoom chatRoomInfo; // 생성 방 정보
+    }
+
+    [Serializable]
     public class CQ_ENTERCHATROOM : Packet
     {
         public CQ_ENTERCHATROOM()
@@ -184,13 +218,20 @@ namespace ShareData
     }
 
     [Serializable]
-    public class SA_CHATROOMLIST : Packet
+    public class SN_CHATROOMLIST : Packet
     {
-        public SA_CHATROOMLIST()
-            : base(PACKET_INDEX.SA_CHATROOMLIST)
+        public SN_CHATROOMLIST()
+            : base(PACKET_INDEX.SN_CHATROOMLIST)
         {
+            ChatRoomList = new Dictionary<int, ChatRoom>();
         }
 
+        public enum E_TYPE
+        {
+            ADD_LIST,   // 추가된 방 목록 전달
+            DEL_LIST,   // 삭제된 방 목록 전달
+        }
+        public E_TYPE Type;
         public Dictionary<int, ChatRoom> ChatRoomList;
     }
 }

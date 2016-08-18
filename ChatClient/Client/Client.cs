@@ -3,7 +3,7 @@ using ShareData;
 using ShareData.CommonLogic.Network;
 using ShareData.Message;
 
-namespace Client
+namespace ChatClient.Client
 {
     class Client : Network
     {

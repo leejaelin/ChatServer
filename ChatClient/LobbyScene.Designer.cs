@@ -72,6 +72,7 @@
             this.ListBox_RoomList.Name = "ListBox_RoomList";
             this.ListBox_RoomList.Size = new System.Drawing.Size(259, 232);
             this.ListBox_RoomList.TabIndex = 7;
+            this.ListBox_RoomList.DoubleClick += new System.EventHandler(this.DoubleClick_EnterRoom);
             // 
             // LobbyScene
             // 

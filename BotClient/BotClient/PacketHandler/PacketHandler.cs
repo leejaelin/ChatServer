@@ -37,7 +37,7 @@ namespace BotClient.BotClient.PacketHandler
             packetHandlerList.Add((int)PACKET_INDEX.SA_CHAT, SA_CHAT);
             packetHandlerList.Add((int)PACKET_INDEX.SA_CHANGENICKNAME, SA_CHANGENICKNAME);
             packetHandlerList.Add((int)PACKET_INDEX.SA_ENTERCHATROOM, SA_ENTERCHATROOM);
-            packetHandlerList.Add((int)PACKET_INDEX.SA_CHATROOMLIST, SA_CHATROOMLIST);
+            packetHandlerList.Add((int)PACKET_INDEX.SN_CHATROOMLIST, SN_CHATROOMLIST);
         }
 
         public bool SA_LOGIN(Packet packet)
@@ -70,7 +70,7 @@ namespace BotClient.BotClient.PacketHandler
             return true;
         }
 
-        public bool SA_CHATROOMLIST(Packet packet)
+        public bool SN_CHATROOMLIST(Packet packet)
         {
             return true;
         }

@@ -1,5 +1,5 @@
 ﻿using ChatClient.Client.PacketHandler;
-using Client;
+using ChatClient.Client;
 using Clinet.Process;
 using ShareData;
 using ShareData.Message;

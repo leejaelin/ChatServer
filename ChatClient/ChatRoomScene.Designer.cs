@@ -38,8 +38,9 @@
             // 
             this.RichTextBox_ReadChat.Location = new System.Drawing.Point(4, 4);
             this.RichTextBox_ReadChat.Name = "RichTextBox_ReadChat";
+            this.RichTextBox_ReadChat.ReadOnly = true;
             this.RichTextBox_ReadChat.Size = new System.Drawing.Size(276, 230);
-            this.RichTextBox_ReadChat.TabIndex = 0;
+            this.RichTextBox_ReadChat.TabIndex = 3;
             this.RichTextBox_ReadChat.Text = "";
             // 
             // TextBox_WriteChat
@@ -47,14 +48,15 @@
             this.TextBox_WriteChat.Location = new System.Drawing.Point(4, 240);
             this.TextBox_WriteChat.Name = "TextBox_WriteChat";
             this.TextBox_WriteChat.Size = new System.Drawing.Size(276, 21);
-            this.TextBox_WriteChat.TabIndex = 1;
+            this.TextBox_WriteChat.TabIndex = 0;
+            this.TextBox_WriteChat.KeyDown += new System.Windows.Forms.KeyEventHandler(this.KeyDown_SendChat);
             // 
             // Btn_SendChat
             // 
             this.Btn_SendChat.Location = new System.Drawing.Point(287, 240);
             this.Btn_SendChat.Name = "Btn_SendChat";
             this.Btn_SendChat.Size = new System.Drawing.Size(75, 23);
-            this.Btn_SendChat.TabIndex = 2;
+            this.Btn_SendChat.TabIndex = 1;
             this.Btn_SendChat.Text = "button1";
             this.Btn_SendChat.UseVisualStyleBackColor = true;
             // 
@@ -65,9 +67,9 @@
             this.listBox_UserList.Location = new System.Drawing.Point(287, 4);
             this.listBox_UserList.Name = "listBox_UserList";
             this.listBox_UserList.Size = new System.Drawing.Size(75, 232);
-            this.listBox_UserList.TabIndex = 3;
+            this.listBox_UserList.TabIndex = 2;
             // 
-            // ChatForm
+            // ChatRoomScene
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -76,7 +78,7 @@
             this.Controls.Add(this.Btn_SendChat);
             this.Controls.Add(this.TextBox_WriteChat);
             this.Controls.Add(this.RichTextBox_ReadChat);
-            this.Name = "ChatForm";
+            this.Name = "ChatRoomScene";
             this.Text = "ChatForm";
             this.ResumeLayout(false);
             this.PerformLayout();
