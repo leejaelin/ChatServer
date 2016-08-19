@@ -27,8 +27,11 @@ namespace ShareData
 
         CQ_CREATECHATROOM = PACKET_CATEGORY.ROOM, // 20000 ~
         SA_CREATECHATROOM,
+
         CQ_ENTERCHATROOM,
         SA_ENTERCHATROOM,
+
+        CN_LEAVECHATROOM,
         
         SN_CHATROOMLIST,
 
@@ -62,6 +65,10 @@ namespace ShareData
         }
     }
 
+    /// <summary>
+    /// USER 관련 패킷
+    /// </summary>
+    /// 
     [Serializable]
     public class CQ_LOGIN : Packet
     {
@@ -129,6 +136,10 @@ namespace ShareData
         public string nickname; // 변경 닉네임
     }
 
+    /// <summary>
+    /// Chat 관련 패킷
+    /// </summary>
+    /// 
 
     [Serializable]
     public class CQ_CHAT : Packet
@@ -156,6 +167,10 @@ namespace ShareData
         public string MsgStr; // 전달 받은 채팅 메시지
     }
 
+    /// <summary>
+    /// ROOM 관련 패킷
+    /// </summary>
+    /// 
     [Serializable]
     public class CQ_CREATECHATROOM : Packet
     {
@@ -215,6 +230,17 @@ namespace ShareData
 
         public E_RESULT Result;  // 성공 여부
         public ChatRoom ChatRoomInfo;   // 채팅방 정보
+    }
+
+    [Serializable]
+    public class CN_LEAVECHATROOM : Packet
+    {
+        public CN_LEAVECHATROOM()
+            : base(PACKET_INDEX.CN_LEAVECHATROOM)
+        {
+        }
+
+        public int roomIdx;
     }
 
     [Serializable]

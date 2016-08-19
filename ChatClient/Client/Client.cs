@@ -9,11 +9,11 @@ namespace ChatClient.Client
     {
         public Client() : base(Network.E_SOCKET_MODE.CLIENT)
         {
-            m_userIdx = 0;
+            UserIdx = 0;
         }
 
         // member variables
-        private uint m_userIdx; // 서버에서 전달 받은 유저 인덱스
+        public uint UserIdx { get; set; } // 서버에서 전달 받은 유저 인덱스
         private string m_nickname; // 유저 닉네임
         public string Nickname { get { return m_nickname; } set{m_nickname = value;} }
 

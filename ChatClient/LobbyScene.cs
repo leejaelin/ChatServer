@@ -59,6 +59,9 @@ namespace ChatClient
                 // 삭제
                 ChatRoomSceneList.Remove(chatRoom.Index);
                 newChatRoom = null;
+
+                Client.Client client = Launcher.Instance.GetClient();
+                client.SendPacket(new CN_LEAVECHATROOM() { roomIdx = chatRoom.Index });
             }));
             newThread.Start();
         }
@@ -74,6 +77,10 @@ namespace ChatClient
                     }
                     break;
                 case ShareData.SN_CHATROOMLIST.E_TYPE.DEL_LIST:
+                    {
+                        foreach(var chatRoom in roomList)
+                            DelListBox(chatRoom.Value);
+                    }
                     break;
             }
         }
@@ -83,7 +90,7 @@ namespace ChatClient
             this.Invoke(new MethodInvoker(() => 
             {
                 bool isExist = false;
-                foreach (ChatRoom chatRoom in this.ListBox_RoomList.Items)
+                foreach (ChatRoom chatRoom in this.ListBox_RoomList.Items) // 존재하는 리스트 여부 검사
                 {
                     if (chatRoomInfo.Index == chatRoom.Index)
                     {
@@ -120,11 +127,14 @@ namespace ChatClient
             if (0 >= size)
                 return;
 
+            Client.Client client = Launcher.Instance.GetClient();
+
             List<ChatRoomScene> tmpList = new List<ChatRoomScene>(size);
 
             foreach( var chatRoomScene in ChatRoomSceneList )
             {
                 tmpList.Add(chatRoomScene.Value);
+                client.SendPacket(new CN_LEAVECHATROOM() { roomIdx = chatRoomScene.Key });
             }
 
             for (int idx = 0; idx < size; ++idx)
@@ -133,24 +143,7 @@ namespace ChatClient
                 tmpList[0].Dispose();
                 tmpList.RemoveAt(0);
             }
-
-            //try
-            //{
-            //    foreach (var chatRoom in ChatRoomSceneList)
-            //    {
-            //        chatRoom.Value.CloseScene();
-            //        chatRoom.Value.Dispose();
-            //        if (null == ChatRoomSceneList)
-            //            break;
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e);
-            //}
         }
-
-        
 
         private void enterRoom()
         {
@@ -187,10 +180,9 @@ namespace ChatClient
 
         private void Btn_CreateChatRoom_Click(object sender, EventArgs e)
         {
-            CQ_CREATECHATROOM req = new CQ_CREATECHATROOM();
-
-            req.chatRoomInfo.Title = "";
             var client = Launcher.Instance.GetClient();
+            CQ_CREATECHATROOM req = new CQ_CREATECHATROOM();
+            req.chatRoomInfo.Title = "";
             client.SendPacket(req);
         }
     }

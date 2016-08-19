@@ -2,6 +2,7 @@
 using ChatServer.Data.User;
 using ChatServer.Data.User.UserState;
 using ShareData;
+using ShareData.Data.Room;
 using ShareData.Message;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,7 @@ namespace ChatServer.Process
             packetHandlerList.Add((int)PACKET_INDEX.CQ_CHANGENICKNAME, CQ_CHANGENICKNAME);
             packetHandlerList.Add((int)PACKET_INDEX.CQ_CREATECHATROOM, CQ_CREATECHATROOM);
             packetHandlerList.Add((int)PACKET_INDEX.CQ_ENTERCHATROOM, CQ_ENTERCHATROOM);
+            packetHandlerList.Add((int)PACKET_INDEX.CN_LEAVECHATROOM, CN_LEAVECHATROOM);
         }
 
         public void MsgProcess(User user, Message message)
@@ -56,9 +58,27 @@ namespace ChatServer.Process
             packetHandlerList[packet.GetPacketIndex()](user, packet);
         }
 
-        private void broadCast(Packet packet)
+        private void broadCastForServer(Packet packet)
         {
-            ChatServer.Instance.Broadcast(packet);
+            foreach (var user in UserContainer.Instance.ConUserContainer.Values)
+                user.DoSend(packet);
+        }
+
+        private void broadCastForChatRoom(Packet packet, int roomIdx)
+        {
+            RoomContainer roomContainer = RoomContainer.Instance;
+            ChatRoom chatRoom = roomContainer.Find(roomIdx); // 존재 하는 방인지 먼저 검색
+            if( null == chatRoom )
+                return;
+
+            UserContainer userContainer = UserContainer.Instance;
+            foreach( ChatRoomUserInfo userInfo in chatRoom.RoomUserList.Values )
+            {
+                User user = userContainer.Find(userInfo.userIndex); // 존재 하는 유저인지 검색
+                if (null == user)
+                    continue;
+                user.DoSend(packet);
+            }
         }
         /// ////////////////////////////////////////////////////////////////////////////////////
         /// ////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +125,7 @@ namespace ChatServer.Process
             ack.SenderNickname = user.NickName;
             ack.MsgStr = req.MsgStr;
             ack.RoomIdx = req.RoomIdx;
-            broadCast(ack);
+            broadCastForChatRoom(ack, req.RoomIdx);
 
             return true;
         }
@@ -133,9 +153,11 @@ namespace ChatServer.Process
 
             CQ_CREATECHATROOM req = (CQ_CREATECHATROOM)packet;
 
+            req.chatRoomInfo.RoomUserList.Add(user.Index, new ChatRoomUserInfo(user.Index, user.NickName));
+            
             RoomContainer roomContainer = RoomContainer.Instance;
             bool ret = roomContainer.Insert(req.chatRoomInfo);
-
+            
             SA_CREATECHATROOM ack = new SA_CREATECHATROOM();
             if (ret)
             {
@@ -150,7 +172,7 @@ namespace ChatServer.Process
             SN_CHATROOMLIST noti = new SN_CHATROOMLIST();
             noti.Type = SN_CHATROOMLIST.E_TYPE.ADD_LIST;
             noti.ChatRoomList.Add(req.chatRoomInfo.Index, req.chatRoomInfo);
-            broadCast(noti);
+            broadCastForServer(noti);
             return true;
         }
 
@@ -162,9 +184,56 @@ namespace ChatServer.Process
             CQ_ENTERCHATROOM req = (CQ_ENTERCHATROOM)packet;
 
             SA_ENTERCHATROOM ack = new SA_ENTERCHATROOM();
+
+            RoomContainer roomContainer = RoomContainer.Instance;
+            ChatRoom chatRoom = roomContainer.Find(req.RoomIdx);
+            if (null == chatRoom)
+            {
+                ack.Result = SA_ENTERCHATROOM.E_RESULT.FAIL;
+                user.DoSend(ack);
+                return false;
+            }
+
+            // 방 안에 유저 리스트에 추가
+            if( chatRoom.RoomUserList.ContainsKey( user.Index ) ) // 방안에 유저 이미 존재
+            {
+                ack.Result = SA_ENTERCHATROOM.E_RESULT.FAIL;
+                user.DoSend(ack);
+                return false;
+            }
+
+            chatRoom.RoomUserList.Add(user.Index, new ChatRoomUserInfo(user.Index, user.NickName));
+            
             ack.Result = SA_ENTERCHATROOM.E_RESULT.SUCCESS;
-            ack.ChatRoomInfo.Index = req.RoomIdx;
+            ack.ChatRoomInfo = chatRoom;
             user.DoSend(ack);
+
+            return true;
+        }
+
+        private bool CN_LEAVECHATROOM(User user, Packet packet)
+        {
+            if (null == user)
+                return false;
+            
+            CN_LEAVECHATROOM noti = (CN_LEAVECHATROOM)packet;
+
+            RoomContainer roomContainer = RoomContainer.Instance;
+            ChatRoom chatRoom = roomContainer.Find(noti.roomIdx);
+            if (null == chatRoom)
+            {
+                return false;
+            }
+            
+            chatRoom.RoomUserList.Remove(user.Index);
+            if( 0 == chatRoom.RoomUserList.Count )
+            {
+                roomContainer.Pop(noti.roomIdx);
+                SN_CHATROOMLIST relay = new SN_CHATROOMLIST();
+                relay.ChatRoomList.Add(noti.roomIdx, chatRoom);
+                relay.Type = SN_CHATROOMLIST.E_TYPE.DEL_LIST;
+                broadCastForServer(relay);
+            }
 
             return true;
         }

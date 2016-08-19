@@ -3,12 +3,13 @@ using System.Collections.Generic;
 
 namespace ShareData.Data.Room
 {
+    [Serializable]
     public class ChatRoomUserInfo
     {
-        private uint userIndex;
-        private string userNickname;
+        public uint userIndex { get; set; }
+        public string userNickname { get; set; }
         
-        ChatRoomUserInfo( uint idx, string nickname)
+        public ChatRoomUserInfo( uint idx, string nickname)
         {
             userIndex = idx;
             userNickname = nickname;

@@ -47,6 +47,8 @@ namespace ChatClient.Client.PacketHandler
         public bool SA_LOGIN(ShareData.Packet packet)
         {
             SA_LOGIN ack = (SA_LOGIN)packet;
+            Client client = Launcher.Instance.GetClient();
+            client.UserIdx = ack.userIndex;
 
             SceneManager currentScene = Scene.SceneManager.Instance;
             currentScene.ChangeScene(new LobbyScene()); // 로그인이 성공 하면 LobbyScene을 실행 시켜준다

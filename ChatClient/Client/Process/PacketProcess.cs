@@ -22,9 +22,11 @@ namespace ChatServer.Process
             }
         }
         #endregion
-        
+
+        private PacketHandler packetHandler;
         public PacketProcess()
         {
+            packetHandler = PacketHandler.Instance;
         }
 
         public void MsgProcess(Message message)
@@ -39,7 +41,11 @@ namespace ChatServer.Process
            if (packet == null)
                 return;
 
-            PacketHandler.Instance.PacketHandlerList[packet.GetPacketIndex()](packet);
+
+           if (!packetHandler.PacketHandlerList.ContainsKey(packet.GetPacketIndex()))
+               return;
+
+            packetHandler.PacketHandlerList[packet.GetPacketIndex()](packet);
         }
 
         private void serverDisconnected()
