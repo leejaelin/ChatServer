@@ -27,12 +27,14 @@ namespace ChatClient
 
         private Thread m_UIThread;
         public Dictionary<int, ChatRoomScene> ChatRoomSceneList { get; set; }
+        private List<ChatRoom> roomList; // 방 목록 리스트박스 삽입되어 있는 정보
         public LobbyScene()
         {
             InitializeComponent();
             m_UIThread = new Thread(new ThreadStart(ThreadProc));
             m_UIThread.Start();
             ChatRoomSceneList = new Dictionary<int, ChatRoomScene>();
+            roomList = new List<ChatRoom>();
         }
 
         private void ThreadProc()
@@ -44,81 +46,98 @@ namespace ChatClient
         {
         }
 
-        public void AddChatRoom( ChatRoom chatRoom )
+        public void AddChatRoom(ChatRoom chatRoom)
         {
-            Thread newThread = new Thread(new ThreadStart(() => 
+            Thread newThread = new Thread(new ThreadStart(() =>
             {
                 ChatRoomScene newChatRoom = new ChatRoomScene(chatRoom);
                 if (ChatRoomSceneList.ContainsKey(chatRoom.Index))
                     return;
 
                 ChatRoomSceneList.Add(chatRoom.Index, newChatRoom);
-                AddListBox(chatRoom);
+                AddRoomList(chatRoom);
                 Application.Run(newChatRoom);
-                
+
                 // 삭제
                 ChatRoomSceneList.Remove(chatRoom.Index);
                 newChatRoom = null;
 
+                // 유저 채팅방에서 나감 처리
                 Client.Client client = Launcher.Instance.GetClient();
                 client.SendPacket(new CN_LEAVECHATROOM() { roomIdx = chatRoom.Index });
             }));
             newThread.Start();
         }
 
-        public void RefreshChatRoomList( SN_CHATROOMLIST.E_TYPE type, Dictionary<int, ChatRoom> roomList )
+        public void RefreshChatRoomList(SN_CHATROOMLIST.E_TYPE type, Dictionary<int, ChatRoom> roomList)
         {
             switch (type)
             {
                 case ShareData.SN_CHATROOMLIST.E_TYPE.ADD_LIST:
                     {
                         foreach (var chatRoom in roomList)
-                            AddListBox(chatRoom.Value);
+                            AddRoomList(chatRoom.Value);
                     }
                     break;
                 case ShareData.SN_CHATROOMLIST.E_TYPE.DEL_LIST:
                     {
-                        foreach(var chatRoom in roomList)
-                            DelListBox(chatRoom.Value);
+                        foreach (var chatRoom in roomList)
+                            RemoveRoomList(chatRoom.Value);
                     }
                     break;
             }
         }
 
-        private void AddListBox(ChatRoom chatRoomInfo)
+        private void AddRoomList(ChatRoom chatRoomInfo)
         {
-            this.Invoke(new MethodInvoker(() => 
+            //this.Invoke(new MethodInvoker(() =>
+            //{
+            //    foreach (ChatRoom room in roomList) // 존재하는 리스트 여부 검사
+            //    {
+            //        if (chatRoomInfo.Index == room.Index)
+            //            return;
+            //    }
+
+            //    roomList.Add(chatRoomInfo);
+            //    this.ListBox_RoomList.Items.Add(chatRoomInfo.Title + "wgkhweilgh");
+            //}));
+
+            invokeFunc(() =>
             {
-                bool isExist = false;
-                foreach (ChatRoom chatRoom in this.ListBox_RoomList.Items) // 존재하는 리스트 여부 검사
+                foreach (ChatRoom room in roomList) // 존재하는 리스트 여부 검사
                 {
-                    if (chatRoomInfo.Index == chatRoom.Index)
+                    if (chatRoomInfo.Index == room.Index)
+                        return;
+                }
+
+                roomList.Add(chatRoomInfo);
+                this.ListBox_RoomList.Items.Add(chatRoomInfo.Title);
+            });
+        }
+
+        private delegate void invokeDelegate();
+        private void invokeFunc(invokeDelegate func)
+        {
+            if (!this.IsHandleCreated)
+                return;
+
+            this.Invoke(new MethodInvoker(func));
+        }
+
+        private void RemoveRoomList(ChatRoom chatRoomInfo)
+        {
+            invokeFunc(() =>
+            {
+                for (int idx = 0; idx < roomList.Count; ++idx) // 존재하는 리스트 여부 검사
+                {
+                    if (chatRoomInfo.Index == roomList[idx].Index)
                     {
-                        isExist = true;
+                        roomList.RemoveAt(idx);
+                        this.ListBox_RoomList.Items.RemoveAt(idx);
                         break;
                     }
                 }
-
-                if (isExist)
-                    return;
-
-                this.ListBox_RoomList.Items.Add((object)chatRoomInfo); 
-            }));
-        }
-
-        private void DelListBox(ChatRoom chatRoomInfo)
-        {
-            this.Invoke(new MethodInvoker(() => 
-            {
-                int listBoxIdx = 0;
-                foreach( ChatRoom chatRoom in this.ListBox_RoomList.Items )
-                {
-                    if( chatRoomInfo.Index == chatRoom.Index )
-                        break;
-                    listBoxIdx++;
-                }
-                this.ListBox_RoomList.Items.RemoveAt(listBoxIdx);
-            }));
+            });
         }
 
         public void CloseAllChatScene()
@@ -131,7 +150,7 @@ namespace ChatClient
 
             List<ChatRoomScene> tmpList = new List<ChatRoomScene>(size);
 
-            foreach( var chatRoomScene in ChatRoomSceneList )
+            foreach (var chatRoomScene in ChatRoomSceneList)
             {
                 tmpList.Add(chatRoomScene.Value);
                 client.SendPacket(new CN_LEAVECHATROOM() { roomIdx = chatRoomScene.Key });

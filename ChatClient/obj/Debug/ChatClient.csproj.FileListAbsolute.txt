@@ -8,19 +8,21 @@ C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\o
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.csproj.GenerateResource.Cache
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.exe
 C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.pdb
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.LoginScene.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.LobbyScene.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.ChangeNicknameScene.resources
+C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.ChatRoomScene.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.csprojResolveAssemblyReference.cache
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.ChatRoomScene.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.LobbyScene.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.ChangeNicknameScene.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.LoginScene.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.Properties.Resources.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.csproj.GenerateResource.Cache
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\bin\Debug\ChatClient.exe.config
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\bin\Debug\ChatClient.exe
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\bin\Debug\ChatClient.pdb
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\bin\Debug\ShareData.dll
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\bin\Debug\ShareData.pdb
-C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.csprojResolveAssemblyReference.cache
-C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.Form1.resources
-C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.Form2.resources
-C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.Properties.Resources.resources
-C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.csproj.GenerateResource.Cache
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.exe
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Debug\ChatClient.pdb
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.LoginScene.resources
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.LobbyScene.resources
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.ChangeNicknameScene.resources
-C:\Users\leejaelin\Documents\Visual Studio 2013\Projects\ChatServer\ChatClient\obj\Debug\ChatClient.ChatRoomScene.resources

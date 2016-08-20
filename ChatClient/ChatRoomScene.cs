@@ -4,24 +4,131 @@ using System;
 using System.Windows.Forms;
 using ShareData;
 using ShareData.Data.Room;
+using System.Collections.Generic;
 
 namespace ChatClient
 {
     public partial class ChatRoomScene : MyScene
     {
-        private ChatClient.Client.Client client; // 세션 및 소켓 정보
+        private Client.Client client; // 세션 및 소켓 정보
         private ChatRoom chatRoomInfo;  // 현재 방의 정보
-        public ChatRoomScene( ChatRoom chatRoom )
+        private List<uint> userList; // 유저 목록 순서
+        public ChatRoomScene(ChatRoom chatRoom)
         {
             InitializeComponent();
             client = Launcher.Instance.GetClient();
             chatRoomInfo = chatRoom;
+            init();
+        }
+
+        private void init()
+        {
+            userList = new List<uint>();
+            foreach (ChatRoomUserInfo chatUser in chatRoomInfo.RoomUserList.Values)
+            {
+                userList.Add(chatUser.userIndex);
+                this.listBox_UserList.Items.Add(chatUser.userNickname);
+            }
+        }
+
+        private delegate void invokeDelegate();
+        private void invokeFunc(invokeDelegate func)
+        {
+            if (!this.IsHandleCreated)
+                return;
+
+            this.Invoke(new MethodInvoker(func));
+        }
+
+        public void AddUserList(ChatRoom chatRoom)
+        {
+            //this.Invoke(new MethodInvoker(() =>
+            //{
+            //    foreach(ChatRoomUserInfo chatUser in chatRoom.RoomUserList.Values)
+            //    {
+            //        bool isExist = false;
+            //        foreach( uint idx in userList )
+            //        {
+            //            if( chatUser.userIndex == idx )
+            //            {
+            //                isExist = true;
+            //                break;
+            //            }
+            //        }
+
+            //        if (isExist) // 존재 하면 리턴
+            //            return;
+
+            //        userList.Add(chatUser.userIndex);
+            //        this.listBox_UserList.Items.Add(chatUser.userNickname + chatUser.userIndex);
+            //    }
+            //}));
+
+            invokeFunc(() =>
+            {
+                foreach (ChatRoomUserInfo chatUser in chatRoom.RoomUserList.Values)
+                {
+                    bool isExist = false;
+                    foreach (uint idx in userList)
+                    {
+                        if (chatUser.userIndex == idx)
+                        {
+                            isExist = true;
+                            break;
+                        }
+                    }
+
+                    if (isExist) // 존재 하면 리턴
+                        return;
+
+                    userList.Add(chatUser.userIndex);
+                    this.listBox_UserList.Items.Add(chatUser.userNickname + chatUser.userIndex);
+                }
+            });
+        }
+
+        public void RemoveUserList(ChatRoom chatRoom)
+        {
+            //this.Invoke(new MethodInvoker(() =>
+            //{
+            //    foreach (ChatRoomUserInfo chatUser in chatRoom.RoomUserList.Values)
+            //    {
+            //        for( int idx = 0; idx < userList.Count; ++idx)
+            //        {
+            //            if( chatUser.userIndex == userList[idx] )
+            //            {
+            //                userList.RemoveAt(idx);
+            //                this.listBox_UserList.Items.RemoveAt(idx);
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}));
+            invokeFunc(() =>
+            {
+                foreach (ChatRoomUserInfo chatUser in chatRoom.RoomUserList.Values)
+                {
+                    for (int idx = 0; idx < userList.Count; ++idx)
+                    {
+                        if (chatUser.userIndex == userList[idx])
+                        {
+                            userList.RemoveAt(idx);
+                            this.listBox_UserList.Items.RemoveAt(idx);
+                            break;
+                        }
+                    }
+                }
+            });
         }
 
         public override void CloseScene()
         {
-          //  forceToCreateHandle();
-            this.Invoke(new MethodInvoker(() => { this.Close(); }));
+            //  forceToCreateHandle();
+            try
+            {
+                this.Invoke(new MethodInvoker(() => { this.Close(); }));
+            }
+            catch (Exception /*e*/) { }
         }
 
         private void forceToCreateHandle() // 내부적으로 핸들이 없는 경우 강제로 만들도록 예외 처리

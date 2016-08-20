@@ -206,7 +206,7 @@ namespace ChatServer.Process
             
             ack.Result = SA_ENTERCHATROOM.E_RESULT.SUCCESS;
             ack.ChatRoomInfo = chatRoom;
-            user.DoSend(ack);
+            broadCastForChatRoom(ack, chatRoom.Index);
 
             return true;
         }

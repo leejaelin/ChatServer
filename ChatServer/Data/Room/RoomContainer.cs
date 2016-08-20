@@ -38,6 +38,9 @@ namespace ChatServer.Data.Room
 
         public bool Insert(ChatRoom chatRoom)
         {
+            if (chatRoom.Title.Equals(""))
+                chatRoom.Title = roomCount + "번 채팅방 입니다.";
+
             chatRoom.Index = roomCount;
             ChatRoomList.Add(roomCount++, chatRoom);
             return true;
