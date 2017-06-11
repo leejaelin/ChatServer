@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using ChatClient.Client.Scene;
 
 namespace ChatClient
 {
@@ -39,11 +40,11 @@ namespace ChatClient
 
         private void ThreadProc()
         {
-
         }
 
         public override void OnEntry()
         {
+            SceneManager sceneManager = SceneManager.Instance;
         }
 
         public void AddChatRoom(ChatRoom chatRoom)
@@ -177,7 +178,9 @@ namespace ChatClient
                 return;
 
             CQ_ENTERCHATROOM req = new CQ_ENTERCHATROOM();
-            req.RoomIdx = ListBox_RoomList.SelectedIndex;
+            if (null == ChatRoomSceneList.ContainsKey(ListBox_RoomList.SelectedIndex))
+                return;
+
             client.SendPacket(req);
         }
 
@@ -202,6 +205,7 @@ namespace ChatClient
             var client = Launcher.Instance.GetClient();
             CQ_CREATECHATROOM req = new CQ_CREATECHATROOM();
             req.chatRoomInfo.Title = "";
+            //req.chatRoomInfo.Index = 
             client.SendPacket(req);
         }
     }

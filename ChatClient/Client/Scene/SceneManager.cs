@@ -1,9 +1,17 @@
 ﻿using ChatClient.Library.MyScene;
+using ShareData;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ChatClient.Client.Scene
 {
+    enum E_SCENE : int
+    {
+        LOBBY = 0,
+        LOGIN,
+        CHATROOM,
+        CHANGENICKNAME
+    }
     class SceneManager
     {
         #region Singleton
@@ -20,10 +28,12 @@ namespace ChatClient.Client.Scene
         #endregion
 
         private bool isLoop;
+        private Dictionary<E_SCENE, List<Packet>> reservedMessageContainer;
         public MyScene CurrentScene { get; set; }
         public SceneManager()
         {
             isLoop = true;
+            reservedMessageContainer = new Dictionary<E_SCENE, List<Packet>>();
             CurrentScene = new LoginScene();
         }
 
@@ -52,6 +62,11 @@ namespace ChatClient.Client.Scene
             {
                 ((LobbyScene)CurrentScene).CloseAllChatScene();
             }
+        }
+
+        public Dictionary<E_SCENE, List<Packet>> GetReservedMessageContainer()
+        {
+            return this.reservedMessageContainer;
         }
     }
 }

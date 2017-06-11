@@ -116,7 +116,20 @@ namespace ChatClient.Client.PacketHandler
         {
             SceneManager sceneManager = SceneManager.Instance;
             if (sceneManager.CurrentScene.GetType() != typeof(LobbyScene)) // 현재 로비 Scene이 없으므로 실패
+            {
+                var reservedMessageContainer = sceneManager.GetReservedMessageContainer();
+                if (reservedMessageContainer.ContainsKey(E_SCENE.LOBBY))
+                {
+                    reservedMessageContainer[E_SCENE.LOBBY].Add(packet);
+                }
+                else
+                {
+                    var list = new List<Packet>();
+                    list.Add(packet);
+                    reservedMessageContainer.Add( E_SCENE.LOBBY, list );
+                }
                 return false;
+            }
 
             SN_CHATROOMLIST noti = (SN_CHATROOMLIST)packet;
             

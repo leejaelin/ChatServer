@@ -1,4 +1,6 @@
-﻿using ChatServer.Data.User;
+﻿using ChatServer.Data.Room;
+using ChatServer.Data.User;
+using ShareData;
 using ShareData.Message;
 
 namespace ChatServer.Process
@@ -25,12 +27,31 @@ namespace ChatServer.Process
         {
             if (null == user) // 유저가 서버에 접속 하였을때
             {
-                UserContainer.Instance.Insert(new User(message.GetCallerIdx(), message.GetSocket()));
+                LoginProcess(message);
             }
             else // 유저가 서버 접속을 끊었을때
             {
-                UserContainer.Instance.Pop(message.GetCallerIdx());
+                LogoutProcess(user, message);
             }
+        }
+
+        void LoginProcess(Message message)
+        {
+            User user = new User(message.GetCallerIdx(), message.GetSocket());
+            UserContainer.Instance.Insert(user);
+
+            RoomContainer roomContainer = RoomContainer.Instance;
+            if( 0 >= roomContainer.ChatRoomList.Count ) { return; }
+            SN_CHATROOMLIST noti = new SN_CHATROOMLIST();
+            noti.ChatRoomList = roomContainer.ChatRoomList;
+            noti.Type = SN_CHATROOMLIST.E_TYPE.ADD_LIST;
+            user.DoSend(noti);
+        }
+
+        void LogoutProcess(User user, Message message)
+        {
+            UserContainer.Instance.Pop(message.GetCallerIdx());
+
         }
     }
 }
