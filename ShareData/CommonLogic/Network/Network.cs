@@ -9,6 +9,7 @@ using ShareData.Message;
 using System.Collections.Concurrent;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ShareData.CommonLogic.Network
 {
@@ -414,7 +415,7 @@ namespace ShareData.CommonLogic.Network
         {
             serverInit();  
         }
-
+        
         private void serverInit()
         {
             // Address, EndPoint
@@ -432,8 +433,11 @@ namespace ShareData.CommonLogic.Network
                 return;
             }
 
+            IPHostEntry host = Dns.GetHostByName(Dns.GetHostName());
+            string myIp = host.AddressList[0].ToString();
             Console.WriteLine("[ Listen ]");
-            Console.WriteLine("[ IP : {0}, PORT : {1} ]", ipEndPoint.Address.ToString(), ipEndPoint.Port);
+            Console.WriteLine("[ IP : {0}, PORT : {1} ]", myIp, ipEndPoint.Port);
+            //Console.WriteLine("[ IP : {0}, PORT : {1} ]", ipEndPoint.Address.ToString(), ipEndPoint.Port);
 
             // Begin Accept
             socket.BeginAccept(m_acceptHandle, null);

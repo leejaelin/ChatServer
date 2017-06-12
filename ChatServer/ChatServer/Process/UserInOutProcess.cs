@@ -42,9 +42,9 @@ namespace ChatServer.Process
 
             RoomContainer roomContainer = RoomContainer.Instance;
             if( 0 >= roomContainer.ChatRoomList.Count ) { return; }
-            SN_CHATROOMLIST noti = new SN_CHATROOMLIST();
+            SA_CHATROOMLIST noti = new SA_CHATROOMLIST();
             noti.ChatRoomList = roomContainer.ChatRoomList;
-            noti.Type = SN_CHATROOMLIST.E_TYPE.ADD_LIST;
+            noti.Type = SA_CHATROOMLIST.E_TYPE.ADD_LIST;
             user.DoSend(noti);
         }
 

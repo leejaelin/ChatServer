@@ -3,7 +3,6 @@ using ChatClient.Client;
 using ShareData;
 using ShareData.Data.Room;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
@@ -45,6 +44,8 @@ namespace ChatClient
         public override void OnEntry()
         {
             SceneManager sceneManager = SceneManager.Instance;
+            Client.Client client = Launcher.Instance.GetClient();
+            client.SendPacket(new CQ_CHATROOMLIST());
         }
 
         public void AddChatRoom(ChatRoom chatRoom)
@@ -70,17 +71,17 @@ namespace ChatClient
             newThread.Start();
         }
 
-        public void RefreshChatRoomList(SN_CHATROOMLIST.E_TYPE type, Dictionary<int, ChatRoom> roomList)
+        public void RefreshChatRoomList(SA_CHATROOMLIST.E_TYPE type, Dictionary<int, ChatRoom> roomList)
         {
             switch (type)
             {
-                case ShareData.SN_CHATROOMLIST.E_TYPE.ADD_LIST:
+                case SA_CHATROOMLIST.E_TYPE.ADD_LIST:
                     {
                         foreach (var chatRoom in roomList)
                             AddRoomList(chatRoom.Value);
                     }
                     break;
-                case ShareData.SN_CHATROOMLIST.E_TYPE.DEL_LIST:
+                case SA_CHATROOMLIST.E_TYPE.DEL_LIST:
                     {
                         foreach (var chatRoom in roomList)
                             RemoveRoomList(chatRoom.Value);

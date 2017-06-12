@@ -33,7 +33,8 @@ namespace ShareData
 
         CN_LEAVECHATROOM,
         
-        SN_CHATROOMLIST,
+        CQ_CHATROOMLIST,
+        SA_CHATROOMLIST,
 
         PACKET_INDEX_END,
     }
@@ -244,10 +245,18 @@ namespace ShareData
     }
 
     [Serializable]
-    public class SN_CHATROOMLIST : Packet
+    public class CQ_CHATROOMLIST : Packet
     {
-        public SN_CHATROOMLIST()
-            : base(PACKET_INDEX.SN_CHATROOMLIST)
+        public CQ_CHATROOMLIST()
+            : base(PACKET_INDEX.CQ_CHATROOMLIST)
+        {}
+    }
+
+    [Serializable]
+    public class SA_CHATROOMLIST : Packet
+    {
+        public SA_CHATROOMLIST()
+            : base(PACKET_INDEX.SA_CHATROOMLIST)
         {
             ChatRoomList = new Dictionary<int, ChatRoom>();
         }

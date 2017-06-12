@@ -41,7 +41,7 @@ namespace ChatClient.Client.PacketHandler
             packetHandlerList.Add((int)PACKET_INDEX.SA_CHANGENICKNAME, SA_CHANGENICKNAME);
             packetHandlerList.Add((int)PACKET_INDEX.SA_CREATECHATROOM, SA_CREATECHATROOM);
             packetHandlerList.Add((int)PACKET_INDEX.SA_ENTERCHATROOM, SA_ENTERCHATROOM);
-            packetHandlerList.Add((int)PACKET_INDEX.SN_CHATROOMLIST, SN_CHATROOMLIST);
+            packetHandlerList.Add((int)PACKET_INDEX.SA_CHATROOMLIST, SA_CHATROOMLIST);
         }
 
         public bool SA_LOGIN(ShareData.Packet packet)
@@ -112,7 +112,7 @@ namespace ChatClient.Client.PacketHandler
             return true;
         }
 
-        public bool SN_CHATROOMLIST(Packet packet)
+        public bool SA_CHATROOMLIST(Packet packet)
         {
             SceneManager sceneManager = SceneManager.Instance;
             if (sceneManager.CurrentScene.GetType() != typeof(LobbyScene)) // 현재 로비 Scene이 없으므로 실패
@@ -126,12 +126,12 @@ namespace ChatClient.Client.PacketHandler
                 {
                     var list = new List<Packet>();
                     list.Add(packet);
-                    reservedMessageContainer.Add( E_SCENE.LOBBY, list );
+                    reservedMessageContainer.Add(E_SCENE.LOBBY, list);
                 }
                 return false;
             }
 
-            SN_CHATROOMLIST noti = (SN_CHATROOMLIST)packet;
+            SA_CHATROOMLIST noti = (SA_CHATROOMLIST)packet;
             
             LobbyScene lobbyScene = (LobbyScene)sceneManager.CurrentScene;
             lobbyScene.RefreshChatRoomList(noti.Type, noti.ChatRoomList);

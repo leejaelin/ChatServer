@@ -42,6 +42,7 @@ namespace ChatServer.Process
             packetHandlerList.Add((int)PACKET_INDEX.CQ_CREATECHATROOM, CQ_CREATECHATROOM);
             packetHandlerList.Add((int)PACKET_INDEX.CQ_ENTERCHATROOM, CQ_ENTERCHATROOM);
             packetHandlerList.Add((int)PACKET_INDEX.CN_LEAVECHATROOM, CN_LEAVECHATROOM);
+            packetHandlerList.Add((int)PACKET_INDEX.CQ_CHATROOMLIST, CQ_CHATROOMLIST);
         }
 
         public void MsgProcess(User user, Message message)
@@ -169,8 +170,8 @@ namespace ChatServer.Process
 
             user.DoSend(ack);
 
-            SN_CHATROOMLIST noti = new SN_CHATROOMLIST();
-            noti.Type = SN_CHATROOMLIST.E_TYPE.ADD_LIST;
+            SA_CHATROOMLIST noti = new SA_CHATROOMLIST();
+            noti.Type = SA_CHATROOMLIST.E_TYPE.ADD_LIST;
             noti.ChatRoomList.Add(req.chatRoomInfo.Index, req.chatRoomInfo);
             broadCastForServer(noti);
             return true;
@@ -229,12 +230,20 @@ namespace ChatServer.Process
             if( 0 == chatRoom.RoomUserList.Count )
             {
                 roomContainer.Pop(noti.roomIdx);
-                SN_CHATROOMLIST relay = new SN_CHATROOMLIST();
+                SA_CHATROOMLIST relay = new SA_CHATROOMLIST();
                 relay.ChatRoomList.Add(noti.roomIdx, chatRoom);
-                relay.Type = SN_CHATROOMLIST.E_TYPE.DEL_LIST;
+                relay.Type = SA_CHATROOMLIST.E_TYPE.DEL_LIST;
                 broadCastForServer(relay);
             }
 
+            return true;
+        }
+
+        private bool CQ_CHATROOMLIST(User user, Packet packet)
+        {
+            SA_CHATROOMLIST ack = new SA_CHATROOMLIST();
+            ack.ChatRoomList = RoomContainer.Instance.ChatRoomList;
+            user.DoSend(ack);
             return true;
         }
     }
