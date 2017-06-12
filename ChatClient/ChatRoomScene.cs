@@ -158,5 +158,19 @@ namespace ChatClient
                 this.RichTextBox_ReadChat.Text += message;
             }) );
         }
+
+        private void KeyDown_SendChat(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar != (char)Keys.Enter)
+                return;
+
+            CQ_CHAT req = new CQ_CHAT();
+            req.RoomIdx = chatRoomInfo.Index;
+            req.MsgStr = this.TextBox_WriteChat.Text;
+            this.TextBox_WriteChat.Clear();
+            client.SendPacket(req);
+
+            e.Handled = true;
+        }
     }
 }

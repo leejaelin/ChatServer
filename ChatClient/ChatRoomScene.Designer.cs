@@ -49,7 +49,7 @@
             this.TextBox_WriteChat.Name = "TextBox_WriteChat";
             this.TextBox_WriteChat.Size = new System.Drawing.Size(276, 21);
             this.TextBox_WriteChat.TabIndex = 0;
-            this.TextBox_WriteChat.KeyDown += new System.Windows.Forms.KeyEventHandler(this.KeyDown_SendChat);
+            this.TextBox_WriteChat.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.KeyDown_SendChat);
             // 
             // Btn_SendChat
             // 
