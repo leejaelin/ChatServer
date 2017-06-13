@@ -117,13 +117,14 @@ namespace ShareData.CommonLogic.Network
         #endregion
 
         // (client) 비동기 서버 접속을 시작 하는 함수
-        public void BeginConnect()
+        public void BeginConnect(string _IP)
         {
             try 
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                socket.BeginConnect(IP, PORT, m_connectHandle, new AsyncObject(socket));
+                //socket.BeginConnect(IP, PORT, m_connectHandle, new AsyncObject(socket));
+                socket.BeginConnect(_IP, PORT, m_connectHandle, new AsyncObject(socket));
             }
             catch(SocketException /*e*/)
             { 
@@ -154,7 +155,7 @@ namespace ShareData.CommonLogic.Network
             }
             catch( SocketException /*e*/ ) // 연결중에 서버가 다운되거나 해서 소켓이 끊어지는 케이스
             {
-                BeginConnect();
+                BeginConnect("");
                 return;
             }
         }
@@ -436,8 +437,7 @@ namespace ShareData.CommonLogic.Network
             IPHostEntry host = Dns.GetHostByName(Dns.GetHostName());
             string myIp = host.AddressList[0].ToString();
             Console.WriteLine("[ Listen ]");
-            Console.WriteLine("[ IP : {0}, PORT : {1} ]", myIp, ipEndPoint.Port);
-            //Console.WriteLine("[ IP : {0}, PORT : {1} ]", ipEndPoint.Address.ToString(), ipEndPoint.Port);
+            Console.WriteLine("[ IP : {0}, PORT : {1} ]", myIp, ipEndPoint.Port);            
 
             // Begin Accept
             socket.BeginAccept(m_acceptHandle, null);

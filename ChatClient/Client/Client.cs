@@ -7,16 +7,19 @@ namespace ChatClient.Client
 {
     class Client : Network
     {
-        public Client() : base(Network.E_SOCKET_MODE.CLIENT)
+        public Client(string IP) : base(Network.E_SOCKET_MODE.CLIENT)
         {
             UserIdx = 0;
+            this.IP = IP;
         }
 
         // member variables
         public uint UserIdx { get; set; } // 서버에서 전달 받은 유저 인덱스
         private string m_nickname; // 유저 닉네임
         public string Nickname { get { return m_nickname; } set{m_nickname = value;} }
-
+        public string IP;
+        public string PORT;
+        
         public void SendPacket(Packet packet)
         {
             sendPacket(packet);
@@ -26,7 +29,7 @@ namespace ChatClient.Client
         {
             if(socket == null)
             {
-                BeginConnect(); // 연결이 안되어 있으면 연결 시작
+                BeginConnect(IP); // 연결이 안되어 있으면 연결 시작
                 return true;
             }
 

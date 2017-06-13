@@ -33,6 +33,7 @@
             this.Label_ID = new System.Windows.Forms.Label();
             this.Label_PW = new System.Windows.Forms.Label();
             this.Btn_Login = new System.Windows.Forms.Button();
+            this.IPtextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // Text_ID
@@ -69,7 +70,7 @@
             // 
             // Btn_Login
             // 
-            this.Btn_Login.Location = new System.Drawing.Point(13, 71);
+            this.Btn_Login.Location = new System.Drawing.Point(12, 91);
             this.Btn_Login.Name = "Btn_Login";
             this.Btn_Login.Size = new System.Drawing.Size(221, 23);
             this.Btn_Login.TabIndex = 4;
@@ -77,17 +78,27 @@
             this.Btn_Login.UseVisualStyleBackColor = true;
             this.Btn_Login.Click += new System.EventHandler(this.button1_Click);
             // 
-            // LoginForm
+            // IPtextBox
+            // 
+            this.IPtextBox.Location = new System.Drawing.Point(14, 64);
+            this.IPtextBox.Name = "IPtextBox";
+            this.IPtextBox.Size = new System.Drawing.Size(86, 21);
+            this.IPtextBox.TabIndex = 5;
+            this.IPtextBox.Text = "127.0.0.1";
+            this.IPtextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LoginScene
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(244, 102);
+            this.ClientSize = new System.Drawing.Size(244, 120);
+            this.Controls.Add(this.IPtextBox);
             this.Controls.Add(this.Btn_Login);
             this.Controls.Add(this.Label_PW);
             this.Controls.Add(this.Label_ID);
             this.Controls.Add(this.Text_PW);
             this.Controls.Add(this.Text_ID);
-            this.Name = "LoginForm";
+            this.Name = "LoginScene";
             this.Text = "채팅_로그인";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -101,5 +112,6 @@
         private System.Windows.Forms.Label Label_ID;
         private System.Windows.Forms.Label Label_PW;
         private System.Windows.Forms.Button Btn_Login;
+        private System.Windows.Forms.TextBox IPtextBox;
     }
 }

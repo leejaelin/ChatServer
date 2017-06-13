@@ -24,6 +24,8 @@ namespace ChatClient.Client
         private bool isWorkerThread;
         private AutoResetEvent m_MainThreadEventHandler;
         private Client client;
+        private string IP;
+
         public Launcher()
         {
             isWorkerThread = true;
@@ -32,11 +34,12 @@ namespace ChatClient.Client
         }
 
         // member methods
-        public void Start()
+        public void Start(string IP)
         {
             if (null != workerThread)
                 return;
 
+            this.IP = IP;
             helloMessage();
             startStandAlone();            
         }
@@ -98,7 +101,7 @@ namespace ChatClient.Client
         private void createClient()
         {
             // Client 생성
-            client = new Client();
+            client = new Client(IP);
         }
 
         private void helloMessage()

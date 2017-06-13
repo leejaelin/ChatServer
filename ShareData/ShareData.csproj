@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonLogic\JobQueue\JobQueue.cs" />
+    <Compile Include="CommonLogic\Log\Log.cs" />
     <Compile Include="CommonLogic\Network\Network.cs" />
     <Compile Include="Data\Room\Room.cs" />
     <Compile Include="Message\Message.cs" />

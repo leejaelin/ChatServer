@@ -27,7 +27,7 @@ namespace BotClient.BotClient
         {
             if( socket == null )
             {
-                BeginConnect();
+                BeginConnect("");
                 return true;
             }
 

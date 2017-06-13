@@ -22,7 +22,7 @@ namespace ChatClient
             this.Text_ID.Enabled = false;
             this.Text_PW.Enabled = false;
             this.Btn_Login.Enabled = false;
-            Launcher.Instance.Start();
+            Launcher.Instance.Start(this.IPtextBox.Text);
         }
 
         public override void CloseScene()

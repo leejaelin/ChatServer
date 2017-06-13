@@ -5,6 +5,7 @@ using ShareData.Message;
 using System.Collections.Generic;
 using ShareData;
 using System.Threading;
+using ShareData.CommonLogic.Log;
 
 namespace ChatServer
 {    
@@ -26,14 +27,16 @@ namespace ChatServer
         public ChatServer() : base(Network.E_SOCKET_MODE.SERVER)
         {
             processList = new Dictionary<MessageType, IProcess>();
-            mainThreadEventHandler = new AutoResetEvent(true);
             init();
+            mainThreadEventHandler = new AutoResetEvent(true);
+            logMaker = new LogMaker();
         }
         ~ChatServer() {}
 
         // member variable
         private Dictionary<MessageType, IProcess> processList;
         private AutoResetEvent mainThreadEventHandler;
+        public static LogMaker logMaker;
 
         private void init()
         {
@@ -44,7 +47,12 @@ namespace ChatServer
 
         public void JobLoop()
         {
-            while(true)
+            logMaker.File("SERVER START UP!!!!");
+            System.Net.IPHostEntry host = System.Net.Dns.GetHostByName(System.Net.Dns.GetHostName());
+            string myIp = host.AddressList[0].ToString();
+            logMaker.File("[ IP : " + myIp + " / PORT : " + Network.PORT + " ]");
+
+            while (true)
             {
                 Message message = JobQueue.TryPopFront();
                 if (message == null)
