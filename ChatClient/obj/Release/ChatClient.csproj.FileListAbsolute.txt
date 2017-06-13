@@ -18,7 +18,9 @@ C:\Users\leejaelin\Documents\ChatServer\ChatClient\bin\Release\ChatClient.pdb
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\bin\Release\ShareData.dll
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\bin\Release\ShareData.pdb
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.csprojResolveAssemblyReference.cache
-C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.Form1.resources
-C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.Form2.resources
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.Properties.Resources.resources
 C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.csproj.GenerateResource.Cache
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.ChatRoomScene.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.LobbyScene.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.ChangeNicknameScene.resources
+C:\Users\leejaelin\Documents\ChatServer\ChatClient\obj\Release\ChatClient.LoginScene.resources
