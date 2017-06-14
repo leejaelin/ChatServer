@@ -10,3 +10,4 @@ C:\Users\leejaelin\Documents\ChatServer\ShareData\bin\Release\ShareData.dll
 C:\Users\leejaelin\Documents\ChatServer\ShareData\bin\Release\ShareData.pdb
 C:\Users\leejaelin\Documents\ChatServer\ShareData\obj\Release\ShareData.dll
 C:\Users\leejaelin\Documents\ChatServer\ShareData\obj\Release\ShareData.pdb
+C:\Users\leejaelin\Documents\ChatServer\ShareData\obj\Release\ShareData.csprojResolveAssemblyReference.cache
