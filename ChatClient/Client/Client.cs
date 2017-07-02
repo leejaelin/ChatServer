@@ -17,9 +17,9 @@ namespace ChatClient.Client
         public uint UserIdx { get; set; } // 서버에서 전달 받은 유저 인덱스
         private string m_nickname; // 유저 닉네임
         public string Nickname { get { return m_nickname; } set{m_nickname = value;} }
-        public string IP;
-        public string PORT;
-        
+        public new string IP;
+        //public new string PORT;
+
         public void SendPacket(Packet packet)
         {
             sendPacket(packet);

@@ -26,14 +26,14 @@ namespace ChatClient
         #endregion
 
         private Thread m_UIThread;
-        public Dictionary<int, ChatRoomScene> ChatRoomSceneList { get; set; }
+        public Dictionary<int, ChatRoomScene> ParticipatedChatRoomList { get; set; }
         private List<ChatRoom> roomList; // 방 목록 리스트박스 삽입되어 있는 정보
         public LobbyScene()
         {
             InitializeComponent();
             m_UIThread = new Thread(new ThreadStart(ThreadProc));
             m_UIThread.Start();
-            ChatRoomSceneList = new Dictionary<int, ChatRoomScene>();
+            ParticipatedChatRoomList = new Dictionary<int, ChatRoomScene>();
             roomList = new List<ChatRoom>();
         }
 
@@ -52,16 +52,21 @@ namespace ChatClient
         {
             Thread newThread = new Thread(new ThreadStart(() =>
             {
-                ChatRoomScene newChatRoom = new ChatRoomScene(chatRoom);
-                if (ChatRoomSceneList.ContainsKey(chatRoom.Index))
+                if (ParticipatedChatRoomList.ContainsKey(chatRoom.Index))
+                {
+                    ChatRoomScene chatRoomScene = null;
+                    ParticipatedChatRoomList.TryGetValue(chatRoom.Index, out chatRoomScene);
+                    chatRoomScene.AddUserList(chatRoom);
                     return;
+                }
 
-                ChatRoomSceneList.Add(chatRoom.Index, newChatRoom);
+                ChatRoomScene newChatRoom = new ChatRoomScene(chatRoom);
+                ParticipatedChatRoomList.Add(chatRoom.Index, newChatRoom);
                 AddRoomList(chatRoom);
                 Application.Run(newChatRoom);
 
                 // 삭제
-                ChatRoomSceneList.Remove(chatRoom.Index);
+                ParticipatedChatRoomList.Remove(chatRoom.Index);
                 newChatRoom = null;
 
                 // 유저 채팅방에서 나감 처리
@@ -92,18 +97,6 @@ namespace ChatClient
 
         private void AddRoomList(ChatRoom chatRoomInfo)
         {
-            //this.Invoke(new MethodInvoker(() =>
-            //{
-            //    foreach (ChatRoom room in roomList) // 존재하는 리스트 여부 검사
-            //    {
-            //        if (chatRoomInfo.Index == room.Index)
-            //            return;
-            //    }
-
-            //    roomList.Add(chatRoomInfo);
-            //    this.ListBox_RoomList.Items.Add(chatRoomInfo.Title + "wgkhweilgh");
-            //}));
-
             invokeFunc(() =>
             {
                 foreach (ChatRoom room in roomList) // 존재하는 리스트 여부 검사
@@ -114,6 +107,7 @@ namespace ChatClient
 
                 roomList.Add(chatRoomInfo);
                 this.ListBox_RoomList.Items.Add(chatRoomInfo.Title);
+               // ParticipatedChatRoomList.Add(chatRoomInfo.Index, new ChatRoomScene( chatRoomInfo ));
             });
         }
 
@@ -144,7 +138,7 @@ namespace ChatClient
 
         public void CloseAllChatScene()
         {
-            int size = ChatRoomSceneList.Count;
+            int size = ParticipatedChatRoomList.Count;
             if (0 >= size)
                 return;
 
@@ -152,7 +146,7 @@ namespace ChatClient
 
             List<ChatRoomScene> tmpList = new List<ChatRoomScene>(size);
 
-            foreach (var chatRoomScene in ChatRoomSceneList)
+            foreach (var chatRoomScene in ParticipatedChatRoomList)
             {
                 tmpList.Add(chatRoomScene.Value);
                 client.SendPacket(new CN_LEAVECHATROOM() { roomIdx = chatRoomScene.Key });
@@ -178,10 +172,9 @@ namespace ChatClient
             if (client == null)
                 return;
 
+            if( roomList.Count < ListBox_RoomList.SelectedIndex ) { return; }
             CQ_ENTERCHATROOM req = new CQ_ENTERCHATROOM();
-            if (null == ChatRoomSceneList.ContainsKey(ListBox_RoomList.SelectedIndex))
-                return;
-
+            req.RoomIdx = roomList[ListBox_RoomList.SelectedIndex].Index;
             client.SendPacket(req);
         }
 

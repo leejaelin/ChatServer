@@ -41,69 +41,32 @@ namespace ChatClient
         }
 
         public void AddUserList(ChatRoom chatRoom)
-        {
-            //this.Invoke(new MethodInvoker(() =>
-            //{
-            //    foreach(ChatRoomUserInfo chatUser in chatRoom.RoomUserList.Values)
-            //    {
-            //        bool isExist = false;
-            //        foreach( uint idx in userList )
-            //        {
-            //            if( chatUser.userIndex == idx )
-            //            {
-            //                isExist = true;
-            //                break;
-            //            }
-            //        }
-
-            //        if (isExist) // 존재 하면 리턴
-            //            return;
-
-            //        userList.Add(chatUser.userIndex);
-            //        this.listBox_UserList.Items.Add(chatUser.userNickname + chatUser.userIndex);
-            //    }
-            //}));
-
+        { 
             invokeFunc(() =>
             {
+                userList.Clear();
+                this.listBox_UserList.Items.Clear();
                 foreach (ChatRoomUserInfo chatUser in chatRoom.RoomUserList.Values)
                 {
-                    bool isExist = false;
-                    foreach (uint idx in userList)
-                    {
-                        if (chatUser.userIndex == idx)
-                        {
-                            isExist = true;
-                            break;
-                        }
-                    }
+                    //userList.Add(chatUser.userIndex);
+                    //this.listBox_UserList.Items.Add(chatUser.userNickname + chatUser.userIndex);
+                    //bool isExist = false;
+                    //foreach (uint idx in userList)
+                    //{
+                    //    if (chatUser.userIndex == idx)
+                    //    {
+                    //        continue;
+                    //    }
 
-                    if (isExist) // 존재 하면 리턴
-                        return;
-
+                    //}
                     userList.Add(chatUser.userIndex);
-                    this.listBox_UserList.Items.Add(chatUser.userNickname + chatUser.userIndex);
+                    this.listBox_UserList.Items.Add(chatUser.userNickname);
                 }
             });
         }
 
         public void RemoveUserList(ChatRoom chatRoom)
         {
-            //this.Invoke(new MethodInvoker(() =>
-            //{
-            //    foreach (ChatRoomUserInfo chatUser in chatRoom.RoomUserList.Values)
-            //    {
-            //        for( int idx = 0; idx < userList.Count; ++idx)
-            //        {
-            //            if( chatUser.userIndex == userList[idx] )
-            //            {
-            //                userList.RemoveAt(idx);
-            //                this.listBox_UserList.Items.RemoveAt(idx);
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}));
             invokeFunc(() =>
             {
                 foreach (ChatRoomUserInfo chatUser in chatRoom.RoomUserList.Values)
@@ -123,7 +86,6 @@ namespace ChatClient
 
         public override void CloseScene()
         {
-            //  forceToCreateHandle();
             try
             {
                 this.Invoke(new MethodInvoker(() => { this.Close(); }));

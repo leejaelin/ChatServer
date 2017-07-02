@@ -64,10 +64,10 @@ namespace ChatClient.Client.PacketHandler
             SA_CHAT ack = (SA_CHAT)packet;
             
             LobbyScene lobbyScene = (LobbyScene)sceneManager.CurrentScene;
-            if (!lobbyScene.ChatRoomSceneList.ContainsKey(ack.RoomIdx))
+            if (!lobbyScene.ParticipatedChatRoomList.ContainsKey(ack.RoomIdx))
                 return false;
 
-            lobbyScene.ChatRoomSceneList[ack.RoomIdx].RecvChatMessage("[ "+ack.SenderNickname+" ] " + ack.MsgStr);
+            lobbyScene.ParticipatedChatRoomList[ack.RoomIdx].RecvChatMessage("[ "+ack.SenderNickname+" ] " + ack.MsgStr);
 
             return true;
         }
@@ -118,16 +118,8 @@ namespace ChatClient.Client.PacketHandler
             if (sceneManager.CurrentScene.GetType() != typeof(LobbyScene)) // 현재 로비 Scene이 없으므로 실패
             {
                 var reservedMessageContainer = sceneManager.GetReservedMessageContainer();
-                if (reservedMessageContainer.ContainsKey(E_SCENE.LOBBY))
-                {
-                    reservedMessageContainer[E_SCENE.LOBBY].Add(packet);
-                }
-                else
-                {
-                    var list = new List<Packet>();
-                    list.Add(packet);
-                    reservedMessageContainer.Add(E_SCENE.LOBBY, list);
-                }
+                if (reservedMessageContainer.ContainsKey(E_SCENE.LOBBY)) { reservedMessageContainer[E_SCENE.LOBBY].Add(packet); }
+                else{reservedMessageContainer.Add(E_SCENE.LOBBY, new List<Packet> { packet });}
                 return false;
             }
 

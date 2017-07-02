@@ -66,11 +66,13 @@
             // 
             // ListBox_RoomList
             // 
+            this.ListBox_RoomList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ListBox_RoomList.Font = new System.Drawing.Font("굴림체", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.ListBox_RoomList.ForeColor = System.Drawing.SystemColors.MenuText;
             this.ListBox_RoomList.FormattingEnabled = true;
-            this.ListBox_RoomList.ItemHeight = 12;
             this.ListBox_RoomList.Location = new System.Drawing.Point(12, 12);
             this.ListBox_RoomList.Name = "ListBox_RoomList";
-            this.ListBox_RoomList.Size = new System.Drawing.Size(259, 232);
+            this.ListBox_RoomList.Size = new System.Drawing.Size(260, 223);
             this.ListBox_RoomList.TabIndex = 7;
             this.ListBox_RoomList.DoubleClick += new System.EventHandler(this.DoubleClick_EnterRoom);
             // 
